@@ -405,29 +405,61 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				assigner.logger.Debug("execute ltrim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "substr":
 				assigner.logger.Debug("execute substr", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
-				from := 0
-				from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[1]))
-				if err3 != nil {
-					assigner.logger.Error(err3.Error())
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr <= 1 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					// set index from from arg
+					from := 0
+
+					// set default index to
+					to := from
+
+					if err == nil {
+
+						from, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+						if err != nil {
+							assigner.logger.Error(err.Error())
+						}
+
+						if lenSubArgArr == 3 { // if argument is 3
+							if len(subArgArr) >= 2 {
+								to, err = strconv.Atoi(strings.TrimSpace(subArgArr[2]))
+								if err != nil {
+									assigner.logger.Error(err.Error())
+								}
+							}
+						} else if lenSubArgArr == 2 { // if argument is 2
+							to = len(subArgArr[0])
+						} else { // otherwise
+							result = "invalid parameter"
+							err = errors.New(result)
+						}
+					}
+
+					if err == nil {
+						result, err = assigner.Substr(subArgArr[0], from, to)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
 				}
 
-				to := from
-				if len(subArgArr) >= 2 {
-					to, err3 = strconv.Atoi(strings.TrimSpace(subArgArr[2]))
-					if err3 != nil {
-						assigner.logger.Error(err3.Error())
-					}
-				}
-				result, err := assigner.Substr(subArgArr[0], from, to)
-				if err != nil {
-					// show log error if function fail to executed
-					assigner.logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
-				} else {
-					// replace the string from raw function to its result
-					str = str[:funcStart] + result + str[argEnd+1:]
-				}
-				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 
 			case "randomInt":
 				assigner.logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
