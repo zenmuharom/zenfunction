@@ -355,19 +355,35 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 			switch funcMatch {
 			case "trim":
 				assigner.logger.Debug("execute trim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				argArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
-				char := " "
-				if len(argArr) >= 2 {
-					char = argArr[1]
-				}
-				result, err := assigner.Trim(argArr[0], char)
-				if err != nil {
-					// show log error if function fail to executed
-					assigner.logger.Error("execute trim", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
 				} else {
-					// replace the string from raw function to its result
-					str = str[:funcStart] + result + str[argEnd+1:]
+					argArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+					lenArgArr := len(argArr)
+					char := " "
+
+					if lenArgArr != 1 && lenArgArr != 2 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					if err == nil {
+						if lenArgArr == 2 {
+							char = argArr[1]
+						}
+						result, err = assigner.Trim(argArr[0], char)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.logger.Error("execute trim", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
 				}
+
+				// replace the string from raw function to its result
+				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "ltrim":
