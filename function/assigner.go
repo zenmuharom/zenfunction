@@ -431,27 +431,48 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 			case "randomInt":
 				assigner.logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+				result := ""
 				from := 0
-				from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[0]))
-				if err3 != nil {
-					assigner.logger.Error(err3.Error())
-				}
+				to := 0
 
-				to := from
-				if len(subArgArr) >= 2 {
-					to, err3 = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
-					if err3 != nil {
-						assigner.logger.Error(err3.Error())
+				if subArg == "" {
+					from = 0
+					to = 19
+				} else {
+					subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+
+					if len(subArgArr) <= 2 { // if argument 1 or 2
+						from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[0]))
+						if err3 != nil {
+							assigner.logger.Error(err3.Error())
+						}
+
+						to = from
+						if len(subArgArr) >= 2 {
+							to, err3 = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+							if err3 != nil {
+								assigner.logger.Error(err3.Error())
+							} else if to > 19 {
+								to = 19
+							}
+						}
+					} else { // otherwise
+						result = "invalid parameter"
+						err = errors.New(result)
 					}
 				}
-				result, err3 := assigner.RandomInt(from, to)
-				if err3 != nil {
-					assigner.logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
-				} else {
-					// replace the string from raw function to its result
-					str = str[:funcStart] + result + str[argEnd+1:]
+
+				// check if parameter validation is valid, if so then execute command
+				if err == nil {
+					result, err = assigner.RandomInt(from, to)
+					if err != nil {
+						assigner.logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					}
 				}
+
+				// replace the string from raw function to its result
+				str = str[:funcStart] + result + str[argEnd+1:]
+
 				assigner.logger.Debug("execute randomInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateNow":
 				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})

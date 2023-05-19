@@ -8,33 +8,29 @@ import (
 	"github.com/zenmuharom/zenlogger"
 )
 
-func TestLtrim(t *testing.T) {
+func TestRandomInt(t *testing.T) {
 	logger := zenlogger.NewZenlogger()
 	assigner := NewAssigner(logger)
 
 	testCases := []TestCase{
 		{
-			Input:    "ltrim(          halooooo       )",
-			Expected: "halooooo       ",
+			Input:    "",
+			Expected: "0",
 		},
 		{
-			Input:    "ltrim(00000000055000, 0)",
-			Expected: "55000",
+			Input:    "randomInt(1, 2)",
+			Expected: "2",
 		},
 		{
-			Input:    "ltrim(zzzz125000, z)",
-			Expected: "125000",
+			Input:    "randomInt(1, 4)",
+			Expected: "4",
 		},
 		{
-			Input:    "ltrim(zzzz35000, t)",
-			Expected: "zzzz35000",
+			Input:    "randomInt()",
+			Expected: "19",
 		},
 		{
-			Input:    "ltrim()",
-			Expected: "invalid parameter",
-		},
-		{
-			Input:    "ltrim(0002500, 0, 3)",
+			Input:    "randomInt(1, 2, 3)",
 			Expected: "invalid parameter",
 		},
 	}
@@ -46,6 +42,10 @@ func TestLtrim(t *testing.T) {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 		require.NoError(t, err, errMsg)
-		require.Equal(t, tc.Expected, result)
+		if result != "invalid parameter" {
+			require.Equal(t, tc.Expected, fmt.Sprintf("%v", len(fmt.Sprintf("%v", result))))
+		} else {
+			require.Equal(t, tc.Expected, result)
+		}
 	}
 }
