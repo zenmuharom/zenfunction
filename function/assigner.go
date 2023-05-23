@@ -8,8 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"zenfunction/domain"
-
+	"github.com/zenmuharom/zenfunction/domain"
 	"github.com/zenmuharom/zenlogger"
 )
 
@@ -326,19 +325,13 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 		funcStart := funcRe.FindStringIndex(str)[0]
 		argStart := funcStart + len(funcMatch)
 
-		fmt.Println(fmt.Sprintf("kau ni ape: %v", len(funcMatch)))
-
-		fmt.Println(fmt.Sprintf("argStart: %v", argStart))
-
-		fmt.Println(fmt.Sprintf("ini lo: %v", str[argStart:]))
-
 		argMatches := argRe.FindStringSubmatch(str[argStart:])
 		argMatch := ""
 		if len(argMatches) == 0 {
 			result := funcMatch
 			// replace the string from raw function to its result
 			str = str[:funcStart] + result
-			continue
+			break
 		}
 
 		// set argument part to variable
@@ -502,7 +495,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 				if subArg == "" {
 					from = 0
-					to = 19
+					to = 17
 				} else {
 					subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
 
@@ -517,8 +510,8 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 							to, err3 = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
 							if err3 != nil {
 								assigner.logger.Error(err3.Error())
-							} else if to > 19 {
-								to = 19
+							} else if to > 17 {
+								to = 17
 							}
 						}
 					} else { // otherwise
@@ -613,6 +606,5 @@ func (assigner *DefaultAssigner) findArg(command string) (argument string) {
 	}
 
 	argument = command[leftIndex:rightIndex]
-	fmt.Println(fmt.Sprintf("argument: %v", argument))
 	return
 }

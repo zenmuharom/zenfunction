@@ -27,7 +27,7 @@ func TestRandomInt(t *testing.T) {
 		},
 		{
 			Input:    "randomInt()",
-			Expected: "19",
+			Expected: "17",
 		},
 		{
 			Input:    "randomInt(1, 2, 3)",

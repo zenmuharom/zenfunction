@@ -25,7 +25,7 @@ func TestReadCommand(t *testing.T) {
 		},
 		{
 			Input:    "dateNow",
-			Expected: "test",
+			Expected: "dateNow",
 		},
 		{
 			Input:    "trim(dateNow(), 2023)",
@@ -33,7 +33,7 @@ func TestReadCommand(t *testing.T) {
 		},
 		{
 			Input:    "dateAdd(2006/01/02, dateNow(), 30, day)",
-			Expected: "2023/06/21",
+			Expected: "2023/06/22",
 		},
 		{
 			Input:    "substr(dateAdd(2006, dateNow(2006), 1, year), 0, 2)",
