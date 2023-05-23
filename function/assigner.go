@@ -325,7 +325,24 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 		// Find the argument list for the function
 		funcStart := funcRe.FindStringIndex(str)[0]
 		argStart := funcStart + len(funcMatch)
-		argMatch := argRe.FindStringSubmatch(str[argStart:])[0]
+
+		fmt.Println(fmt.Sprintf("kau ni ape: %v", len(funcMatch)))
+
+		fmt.Println(fmt.Sprintf("argStart: %v", argStart))
+
+		fmt.Println(fmt.Sprintf("ini lo: %v", str[argStart:]))
+
+		argMatches := argRe.FindStringSubmatch(str[argStart:])
+		argMatch := ""
+		if len(argMatches) == 0 {
+			result := funcMatch
+			// replace the string from raw function to its result
+			str = str[:funcStart] + result
+			continue
+		}
+
+		// set argument part to variable
+		argMatch = argMatches[0]
 		argEnd := argStart + len(argMatch) - 1
 
 		// Print the function name and argument list
