@@ -5,7 +5,11 @@ import (
 	"github.com/zenmuharom/zenlogger"
 )
 
-func New(logger zenlogger.Zenlogger) function.Assigner {
+type Zenfunction interface {
+	function.Assigner
+}
+
+func New(logger zenlogger.Zenlogger) Zenfunction {
 	return &function.DefaultAssigner{
 		Logger: logger,
 	}
