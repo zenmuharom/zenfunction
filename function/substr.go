@@ -9,7 +9,7 @@ import (
 
 func (assigner *DefaultAssigner) Substr(arg string, from int, to int) (substred string, err error) {
 	argType := reflect.ValueOf(arg)
-	assigner.logger.Debug("Substr", zenlogger.ZenField{Key: "arg", Value: fmt.Sprintf("%v", arg)}, zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to}, zenlogger.ZenField{Key: "kind", Value: argType.Kind().String()})
+	assigner.Logger.Debug("Substr", zenlogger.ZenField{Key: "arg", Value: fmt.Sprintf("%v", arg)}, zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to}, zenlogger.ZenField{Key: "kind", Value: argType.Kind().String()})
 
 	until := len(fmt.Sprintf("%v", arg))
 

@@ -9,7 +9,7 @@ import (
 )
 
 func (assigner *DefaultAssigner) DateAdd(format string, theDate string, add int, duration string) (added string, err error) {
-	assigner.logger.Debug("DateAdd", zenlogger.ZenField{Key: "format", Value: format})
+	assigner.Logger.Debug("DateAdd", zenlogger.ZenField{Key: "format", Value: format})
 
 	// default layout
 	layoutPatterns := []string{
@@ -62,7 +62,7 @@ func (assigner *DefaultAssigner) DateAdd(format string, theDate string, add int,
 	invalid := false
 	date, err := time.Parse(strings.TrimSpace(format), theDate)
 	if err != nil {
-		assigner.logger.Error("DateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()})
+		assigner.Logger.Error("DateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()})
 		invalid = true
 	}
 
@@ -79,7 +79,7 @@ func (assigner *DefaultAssigner) DateAdd(format string, theDate string, add int,
 
 	if err != nil {
 		date = time.Now()
-		assigner.logger.Error("DateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()}, zenlogger.ZenField{Key: "handling", Value: fmt.Sprintf("set date to %v", date)})
+		assigner.Logger.Error("DateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()}, zenlogger.ZenField{Key: "handling", Value: fmt.Sprintf("set date to %v", date)})
 	}
 
 	var newDate time.Time

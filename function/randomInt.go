@@ -8,7 +8,7 @@ import (
 )
 
 func (assigner *DefaultAssigner) RandomInt(from, to int) (generated string, err error) {
-	assigner.logger.Debug("RandomInt", zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to})
+	assigner.Logger.Debug("RandomInt", zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to})
 
 	if from < 0 {
 		from = 0

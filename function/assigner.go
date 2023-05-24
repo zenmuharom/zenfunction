@@ -13,7 +13,7 @@ import (
 )
 
 type DefaultAssigner struct {
-	logger zenlogger.Zenlogger
+	Logger zenlogger.Zenlogger
 }
 
 type Assigner interface {
@@ -26,12 +26,12 @@ type Assigner interface {
 }
 
 func NewAssigner(logger zenlogger.Zenlogger) Assigner {
-	return &DefaultAssigner{logger: logger}
+	return &DefaultAssigner{Logger: logger}
 }
 
 func (assigner *DefaultAssigner) ValidityConditionField(config domain.ValueConfig, valueToCompare interface{}) (valid bool) {
 
-	assigner.logger.Debug("ValidityConditionField", zenlogger.ZenField{Key: "config", Value: config}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare})
+	assigner.Logger.Debug("ValidityConditionField", zenlogger.ZenField{Key: "config", Value: config}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare})
 	functionGenerated := ""
 
 	if config.ConditionFieldId.Int64 == 0 {
@@ -41,13 +41,13 @@ func (assigner *DefaultAssigner) ValidityConditionField(config domain.ValueConfi
 		functionGenerated, valid = assigner.validityConditionCore(config.ConditionOperator.String, valueToCompare, config.ConditionValue.String)
 	}
 
-	assigner.logger.Debug("ValidityConditionField", zenlogger.ZenField{Key: "fieldName", Value: config.FieldName.String}, zenlogger.ZenField{Key: "functionGenerated", Value: functionGenerated}, zenlogger.ZenField{Key: "valid", Value: valid})
+	assigner.Logger.Debug("ValidityConditionField", zenlogger.ZenField{Key: "fieldName", Value: config.FieldName.String}, zenlogger.ZenField{Key: "functionGenerated", Value: functionGenerated}, zenlogger.ZenField{Key: "valid", Value: valid})
 
 	return
 }
 
 func (assigner *DefaultAssigner) ValidityConditionValue(config domain.ValueConfig, valueToCompare interface{}) (valid bool) {
-	assigner.logger.Debug("ValidityCondition", zenlogger.ZenField{Key: "config", Value: config}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare})
+	assigner.Logger.Debug("ValidityCondition", zenlogger.ZenField{Key: "config", Value: config}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare})
 	functionGenerated := ""
 
 	if config.ConditionFieldId.Int64 == 0 {
@@ -57,7 +57,7 @@ func (assigner *DefaultAssigner) ValidityConditionValue(config domain.ValueConfi
 		functionGenerated, valid = assigner.validityConditionCore(config.ConditionOperator.String, valueToCompare, config.ConditionValue.String)
 	}
 
-	assigner.logger.Debug("ValidityCondition", zenlogger.ZenField{Key: "field", Value: config.FieldName.String}, zenlogger.ZenField{Key: "functionGenerated", Value: functionGenerated}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare}, zenlogger.ZenField{Key: "valid", Value: valid})
+	assigner.Logger.Debug("ValidityCondition", zenlogger.ZenField{Key: "field", Value: config.FieldName.String}, zenlogger.ZenField{Key: "functionGenerated", Value: functionGenerated}, zenlogger.ZenField{Key: "valueToCompare", Value: valueToCompare}, zenlogger.ZenField{Key: "valid", Value: valid})
 
 	return
 }
@@ -87,7 +87,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValueToCompare.Kind() != reflect.Int {
 			valueToCompareInt, e = strconv.Atoi(fmt.Sprintf("%v", valueToCompare))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueToCompareInt = len(fmt.Sprintf("%v", valueToCompare))
 			}
 		}
@@ -101,7 +101,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValue.Kind() != reflect.Int {
 			valueInt, e = strconv.Atoi(fmt.Sprintf("%v", value))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueInt = len(fmt.Sprintf("%v", value))
 			}
 		}
@@ -124,7 +124,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValueToCompare.Kind() != reflect.Int {
 			valueToCompareInt, e = strconv.Atoi(fmt.Sprintf("%v", valueToCompare))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueToCompareInt = len(fmt.Sprintf("%v", valueToCompare))
 			}
 		}
@@ -138,7 +138,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValue.Kind() != reflect.Int {
 			valueInt, e = strconv.Atoi(fmt.Sprintf("%v", value))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueInt = len(fmt.Sprintf("%v", value))
 			}
 		}
@@ -161,7 +161,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValueToCompare.Kind() != reflect.Int {
 			valueToCompareInt, e = strconv.Atoi(fmt.Sprintf("%v", valueToCompare))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueToCompareInt = len(fmt.Sprintf("%v", valueToCompare))
 			}
 		}
@@ -175,7 +175,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValue.Kind() != reflect.Int {
 			valueInt, e = strconv.Atoi(fmt.Sprintf("%v", value))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueInt = len(fmt.Sprintf("%v", value))
 			}
 		}
@@ -198,7 +198,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValueToCompare.Kind() != reflect.Int {
 			valueToCompareInt, e = strconv.Atoi(fmt.Sprintf("%v", valueToCompare))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueToCompareInt = len(fmt.Sprintf("%v", valueToCompare))
 			}
 		}
@@ -212,7 +212,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 		if typeValue.Kind() != reflect.Int {
 			valueInt, e = strconv.Atoi(fmt.Sprintf("%v", value))
 			if e != nil {
-				assigner.logger.Debug(e.Error())
+				assigner.Logger.Debug(e.Error())
 				valueInt = len(fmt.Sprintf("%v", value))
 			}
 		}
@@ -232,7 +232,7 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 
 func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, valueToAssign domain.AssignVariableValue) (assigned interface{}) {
 
-	assigner.logger.Debug("AssignValue", zenlogger.ZenField{Key: "parent", Value: parent}, zenlogger.ZenField{Key: "valueToAssign", Value: valueToAssign})
+	assigner.Logger.Debug("AssignValue", zenlogger.ZenField{Key: "parent", Value: parent}, zenlogger.ZenField{Key: "valueToAssign", Value: valueToAssign})
 
 	valueOfVariable := reflect.ValueOf(parent.Value)
 
@@ -306,7 +306,7 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 }
 
 func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err error) {
-	assigner.logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
+	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
 	// Create regular expressions to match function names and their arguments
 	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateNow|dateAdd)\b`)
@@ -347,24 +347,24 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 		var subArgI interface{}
 		if argMatch[1:len(argMatch)-1] != "" {
-			assigner.logger.Debug(fmt.Sprintf("send to ReadCommand2: %v", subArg))
+			assigner.Logger.Debug(fmt.Sprintf("send to ReadCommand2: %v", subArg))
 			subArgI, err = assigner.ReadCommand(subArg)
 			if err != nil {
-				assigner.logger.Error(err.Error())
+				assigner.Logger.Error(err.Error())
 				break
 			}
 			subArg = fmt.Sprintf("%v", subArgI)
-			assigner.logger.Debug(fmt.Sprintf("subArg: %v", subArg))
+			assigner.Logger.Debug(fmt.Sprintf("subArg: %v", subArg))
 		}
 
 		// Print the function name and argument list
-		assigner.logger.Debug(fmt.Sprintf("CALL %s: %s", funcMatch, subArg), zenlogger.ZenField{Key: "loop", Value: loop})
+		assigner.Logger.Debug(fmt.Sprintf("CALL %s: %s", funcMatch, subArg), zenlogger.ZenField{Key: "loop", Value: loop})
 
 		if err == nil {
 			var err error
 			switch funcMatch {
 			case "trim":
-				assigner.logger.Debug("execute trim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute trim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 
 				if subArg == "" {
@@ -387,7 +387,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 						result, err = assigner.Trim(argArr[0], char)
 						if err != nil {
 							// show log error if function fail to executed
-							assigner.logger.Error("execute trim", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							assigner.Logger.Error("execute trim", zenlogger.ZenField{Key: "error", Value: err.Error()})
 						}
 					}
 				}
@@ -395,9 +395,9 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				// replace the string from raw function to its result
 				str = str[:funcStart] + result + str[argEnd+1:]
 
-				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "ltrim":
-				assigner.logger.Debug("execute ltrim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 
 				var argArr []string
@@ -421,16 +421,16 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					result, err = assigner.Ltrim(argArr[0], char)
 					if err != nil {
 						// show log error if function fail to executed
-						assigner.logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						assigner.Logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					}
 				}
 
 				// replace the string from raw function to its result
 				str = str[:funcStart] + result + str[argEnd+1:]
 
-				assigner.logger.Debug("execute ltrim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "substr":
-				assigner.logger.Debug("execute substr", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 
 				if subArg == "" {
@@ -456,14 +456,14 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 						from, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
 						if err != nil {
-							assigner.logger.Error(err.Error())
+							assigner.Logger.Error(err.Error())
 						}
 
 						if lenSubArgArr == 3 { // if argument is 3
 							if len(subArgArr) >= 2 {
 								to, err = strconv.Atoi(strings.TrimSpace(subArgArr[2]))
 								if err != nil {
-									assigner.logger.Error(err.Error())
+									assigner.Logger.Error(err.Error())
 								}
 							}
 						} else if lenSubArgArr == 2 { // if argument is 2
@@ -478,17 +478,17 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 						result, err = assigner.Substr(subArgArr[0], from, to)
 						if err != nil {
 							// show log error if function fail to executed
-							assigner.logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							assigner.Logger.Error("execute substr", zenlogger.ZenField{Key: "error", Value: err.Error()})
 						}
 					}
 
 				}
 
 				str = str[:funcStart] + result + str[argEnd+1:]
-				assigner.logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 
 			case "randomInt":
-				assigner.logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 				from := 0
 				to := 0
@@ -502,14 +502,14 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					if len(subArgArr) <= 2 { // if argument 1 or 2
 						from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[0]))
 						if err3 != nil {
-							assigner.logger.Error(err3.Error())
+							assigner.Logger.Error(err3.Error())
 						}
 
 						to = from
 						if len(subArgArr) >= 2 {
 							to, err3 = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
 							if err3 != nil {
-								assigner.logger.Error(err3.Error())
+								assigner.Logger.Error(err3.Error())
 							} else if to > 17 {
 								to = 17
 							}
@@ -524,53 +524,53 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				if err == nil {
 					result, err = assigner.RandomInt(from, to)
 					if err != nil {
-						assigner.logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						assigner.Logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					}
 				}
 
 				// replace the string from raw function to its result
 				str = str[:funcStart] + result + str[argEnd+1:]
 
-				assigner.logger.Debug("execute randomInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateNow":
-				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result, err := assigner.DateNow(subArg)
 				if err != nil {
-					assigner.logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
 					// replace the string from raw function to its result
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
-				assigner.logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 
 			case "dateAdd":
-				assigner.logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 				argArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
 
 				if len(argArr) > 4 { // if parameter more than needed
-					assigner.logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
+					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else if len(argArr) < 4 { // if parameter less than needed
-					assigner.logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
+					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else { // if parameter match with needed
 					add, errAdd := strconv.Atoi(strings.TrimSpace(argArr[2]))
 					if errAdd != nil {
-						assigner.logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					}
 					result, err = assigner.DateAdd(strings.TrimSpace(argArr[0]), strings.TrimSpace(argArr[1]), add, strings.TrimSpace(argArr[3]))
 					if err != nil {
-						assigner.logger.Error(err.Error())
+						assigner.Logger.Error(err.Error())
 					}
 				}
 
 				// replace the string from raw function to its result
 				str = str[:funcStart] + result + str[argEnd+1:]
 
-				assigner.logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
