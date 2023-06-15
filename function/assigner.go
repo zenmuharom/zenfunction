@@ -371,7 +371,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					argArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
 					lenArgArr := len(argArr)
 					char := " "
 
@@ -402,7 +402,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 				var argArr []string
 				if subArg != "" {
-					argArr = strings.Split(fmt.Sprintf("%v", subArg), ",")
+					argArr = splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
 				}
 				lenArgArr := len(argArr)
 
@@ -497,7 +497,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					from = 0
 					to = 17
 				} else {
-					subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+					subArgArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
 
 					if len(subArgArr) <= 2 { // if argument 1 or 2
 						from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[0]))
@@ -546,7 +546,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 			case "dateAdd":
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
-				argArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+				argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
 
 				if len(argArr) > 4 { // if parameter more than needed
 					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
