@@ -305,7 +305,7 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 	return
 }
 
-func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err error) {
+func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, err error) {
 	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
 	// Create regular expressions to match function names and their arguments
@@ -348,7 +348,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 		var subArgI interface{}
 		if argMatch[1:len(argMatch)-1] != "" {
 			assigner.Logger.Debug(fmt.Sprintf("send to ReadCommand2: %v", subArg))
-			subArgI, err = assigner.ReadCommand(subArg)
+			subArgI, err = assigner.coreReadCommand(subArg)
 			if err != nil {
 				assigner.Logger.Error(err.Error())
 				break
@@ -393,6 +393,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				}
 
 				// replace the string from raw function to its result
+				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -426,6 +427,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				}
 
 				// replace the string from raw function to its result
+				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -484,6 +486,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 				}
 
+				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 
@@ -529,6 +532,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				}
 
 				// replace the string from raw function to its result
+				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -539,6 +543,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
 					// replace the string from raw function to its result
+					result = escapedCommas(result)
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -568,6 +573,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 				}
 
 				// replace the string from raw function to its result
+				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -582,6 +588,16 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 
 	arg = str
 
+	return
+}
+
+func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err error) {
+	arg, err = assigner.coreReadCommand(str)
+	if err != nil {
+		assigner.Logger.Error(err.Error())
+	} else {
+		arg = unEscapedCommas(fmt.Sprintf("%v", arg))
+	}
 	return
 }
 

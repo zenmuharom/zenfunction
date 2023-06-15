@@ -17,6 +17,8 @@ func TestSubstr(t *testing.T) {
 	middleware_response_value = strings.ReplaceAll(middleware_response_value, ",", `\,`)
 	fmt.Println(middleware_response_value)
 	specialCase := "trim(substr($middleware_response_id, 0, 13))"
+	// specialCase := "trim(substr($middleware_response_id, 85, 20), P)"
+	// specialCase := "$middleware_response_id"
 	specialCase = strings.ReplaceAll(specialCase, "$middleware_response_id", middleware_response_value)
 
 	testCases := []TestCase{
