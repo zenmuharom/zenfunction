@@ -437,7 +437,7 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := strings.Split(fmt.Sprintf("%v", subArg), ",")
+					subArgArr := splitWithEscapedCommas(subArg)
 
 					lenSubArgArr := len(subArgArr)
 
