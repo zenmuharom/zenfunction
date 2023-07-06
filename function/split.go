@@ -24,7 +24,7 @@ func splitWithEscapedCommas(str string) []string {
 		}
 
 		if char == ',' && !escaped {
-			splitStrings = append(splitStrings, strings.TrimSpace(currentString))
+			splitStrings = append(splitStrings, strings.Replace(currentString, " ", "", 1))
 			currentString = ""
 			continue
 		}
@@ -33,6 +33,7 @@ func splitWithEscapedCommas(str string) []string {
 		escaped = false
 	}
 
-	splitStrings = append(splitStrings, strings.TrimSpace(currentString))
+	// splitStrings = append(splitStrings, strings.TrimSpace(currentString))
+	splitStrings = append(splitStrings, currentString)
 	return splitStrings
 }

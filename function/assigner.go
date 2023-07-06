@@ -309,8 +309,9 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateNow|dateAdd)\b`)
-	argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateNow|dateAdd|json_decode)\b`)
+	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
+	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
 	loop := 0
@@ -489,7 +490,6 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
-
 			case "randomInt":
 				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -547,7 +547,6 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
-
 			case "dateAdd":
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -577,6 +576,15 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "json_decode":
+				assigner.Logger.Debug("execute json_decode", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result, err := assigner.JsonDecode(subArg)
+				if err != nil {
+					assigner.Logger.Error("execute json_decode", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				} else {
+					arg = result
+				}
+				break
 			}
 		}
 		loop++
@@ -584,9 +592,17 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 		if str == "" {
 			break
 		}
+
+		// FOR DEBUG SAFE
+		if loop > 10 {
+			break
+		}
 	}
 
-	arg = str
+	// set manipulated argument to arg if arg still nill
+	if arg == nil {
+		arg = str
+	}
 
 	return
 }
