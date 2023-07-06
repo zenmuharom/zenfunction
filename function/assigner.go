@@ -347,6 +347,19 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 		subArg := argMatch[1 : len(argMatch)-1]
 
 		var subArgI interface{}
+
+		if funcMatch == "json_decode" {
+			assigner.Logger.Debug("execute json_decode", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+			result, err := assigner.JsonDecode(subArg)
+			if err != nil {
+				assigner.Logger.Error("execute json_decode", zenlogger.ZenField{Key: "error", Value: err.Error()})
+			} else {
+				arg = result
+			}
+			assigner.Logger.Debug("execute json_decode", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			break
+		}
+
 		if argMatch[1:len(argMatch)-1] != "" {
 			assigner.Logger.Debug(fmt.Sprintf("send to ReadCommand2: %v", subArg))
 			subArgI, err = assigner.coreReadCommand(subArg)
@@ -576,25 +589,11 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
-			case "json_decode":
-				assigner.Logger.Debug("execute json_decode", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.JsonDecode(subArg)
-				if err != nil {
-					assigner.Logger.Error("execute json_decode", zenlogger.ZenField{Key: "error", Value: err.Error()})
-				} else {
-					arg = result
-				}
-				break
 			}
 		}
 		loop++
 
 		if str == "" {
-			break
-		}
-
-		// FOR DEBUG SAFE
-		if loop > 10 {
 			break
 		}
 	}
@@ -612,7 +611,10 @@ func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err e
 	if err != nil {
 		assigner.Logger.Error(err.Error())
 	} else {
-		arg = unEscapedCommas(fmt.Sprintf("%v", arg))
+		refValue := reflect.ValueOf(arg)
+		if refValue.Kind() == reflect.String {
+			arg = unEscapedCommas(fmt.Sprintf("%v", arg))
+		}
 	}
 	return
 }
