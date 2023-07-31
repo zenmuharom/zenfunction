@@ -18,10 +18,6 @@ type DefaultAssigner struct {
 
 type Assigner interface {
 	ReadCommand(arg string) (returnVal interface{}, err error)
-	DateAdd(format string, theDate string, add int, duration string) (added string, err error)
-	DateNow(format string) (generated string, err error)
-	Trim(arg0, arg1 string) (trimmed string, err error)
-	Substr(arg string, from int, to int) (substred string, err error)
 	findArg(command string) (argument string)
 }
 
@@ -280,7 +276,31 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 		}
 		parent.Value = arrVariable
 	case "arrayString":
+		arrVariable := make([]string, 0)
+		switch valueOfVariable.Kind() {
+		case reflect.Map:
+			// fmt.Println("is map") // FOR DEBUG
+			mapVariable := make([]string, 0)
+			iter := valueOfVariable.MapRange()
+			for iter.Next() {
+				mapVariable = append(mapVariable, fmt.Sprintf("%v", iter.Value().Interface()))
+			}
+			mapVariable = append(mapVariable, fmt.Sprintf("%v", valueToAssign.Value))
+			parent.Value = mapVariable
 
+		case reflect.Array, reflect.Slice:
+			// fmt.Println("is array") // FOR DEBUG
+			vRef := reflect.ValueOf(parent.Value)
+			for i := 0; i < vRef.Len(); i++ {
+				arrVariable = append(arrVariable, vRef.Index(i).String())
+			}
+			arrVariable = append(arrVariable, fmt.Sprintf("%v", valueToAssign.Value))
+			parent.Value = arrVariable
+		default:
+			// fmt.Println("default") // FOR DEBUG
+			arrVariable = append(arrVariable, fmt.Sprintf("%v", valueToAssign.Value))
+		}
+		parent.Value = arrVariable
 	case "arrayInteger":
 
 	case "arrayBoolean":
@@ -309,7 +329,7 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateNow|dateAdd|json_decode)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -589,6 +609,31 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "dateFormat":
+				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+				argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+
+				if len(argArr) > 3 { // if parameter more than needed
+					assigner.Logger.Error("execute dateFormat", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else if len(argArr) < 3 { // if parameter less than needed
+					assigner.Logger.Error("execute dateFormat", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else { // if parameter match with needed
+					result, err = assigner.DateFormat(strings.TrimSpace(argArr[0]), strings.TrimSpace(argArr[1]), strings.TrimSpace(argArr[2]))
+					if err != nil {
+						assigner.Logger.Error(err.Error())
+					}
+				}
+
+				// replace the string from raw function to its result
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
