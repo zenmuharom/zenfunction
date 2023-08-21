@@ -1,6 +1,9 @@
 package function
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func escapedCommas(str string) (newStr string) {
 	newStr = strings.ReplaceAll(str, ",", `\,`)
@@ -24,16 +27,23 @@ func splitWithEscapedCommas(str string) []string {
 		}
 
 		if char == ',' && !escaped {
-			splitStrings = append(splitStrings, strings.Replace(currentString, " ", "", 1))
+			// fmt.Println(fmt.Sprintf("char:%v | escaped:%v", char, escaped))
+			fmt.Println("masuk ada koma")
+			splitStrings = append(splitStrings, currentString)
 			currentString = ""
 			continue
 		}
 
 		currentString += string(char)
 		escaped = false
+		fmt.Println(currentString)
 	}
 
 	// splitStrings = append(splitStrings, strings.TrimSpace(currentString))
+	fmt.Println("currentString:")
+	fmt.Println(currentString)
 	splitStrings = append(splitStrings, currentString)
+	fmt.Println("splitstring:")
+	fmt.Println(splitStrings)
 	return splitStrings
 }

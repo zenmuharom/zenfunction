@@ -381,7 +381,7 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 		}
 
 		if argMatch[1:len(argMatch)-1] != "" {
-			assigner.Logger.Debug(fmt.Sprintf("send to ReadCommand2: %v", subArg))
+			assigner.Logger.Debug(fmt.Sprintf("send to coreReadCommand: %v", subArg))
 			subArgI, err = assigner.coreReadCommand(subArg)
 			if err != nil {
 				assigner.Logger.Error(err.Error())
