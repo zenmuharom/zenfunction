@@ -27,8 +27,6 @@ func splitWithEscapedCommas(str string) []string {
 		}
 
 		if char == ',' && !escaped {
-			// fmt.Println(fmt.Sprintf("char:%v | escaped:%v", char, escaped))
-			fmt.Println("masuk ada koma")
 			splitStrings = append(splitStrings, currentString)
 			currentString = ""
 			continue
@@ -39,11 +37,6 @@ func splitWithEscapedCommas(str string) []string {
 		fmt.Println(currentString)
 	}
 
-	// splitStrings = append(splitStrings, strings.TrimSpace(currentString))
-	fmt.Println("currentString:")
-	fmt.Println(currentString)
 	splitStrings = append(splitStrings, currentString)
-	fmt.Println("splitstring:")
-	fmt.Println(splitStrings)
 	return splitStrings
 }
