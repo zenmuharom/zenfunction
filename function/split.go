@@ -1,7 +1,6 @@
 package function
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -34,7 +33,6 @@ func splitWithEscapedCommas(str string) []string {
 
 		currentString += string(char)
 		escaped = false
-		fmt.Println(currentString)
 	}
 
 	splitStrings = append(splitStrings, currentString)
