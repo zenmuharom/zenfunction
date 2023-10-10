@@ -329,7 +329,7 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -430,7 +430,7 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
-				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute trim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "ltrim":
 				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -645,6 +645,32 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "concat":
+				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					lenArgArr := len(argArr)
+
+					if lenArgArr == 0 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					if err == nil {
+						result = assigner.Concat(argArr...)
+					}
+				}
+
+				// replace the string from raw function to its result
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
