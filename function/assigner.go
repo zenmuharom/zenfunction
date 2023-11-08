@@ -307,7 +307,7 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 	case "string":
 		parent.Value = fmt.Sprintf("%v", valueToAssign.Value)
 	case "integer":
-		intVal, err := strconv.Atoi(fmt.Sprintf("%v", valueToAssign.Value))
+		intVal, err := strconv.ParseInt(fmt.Sprintf("%v", valueToAssign.Value), 10, 64)
 		if err != nil {
 			parent.Value = 0
 		} else {
