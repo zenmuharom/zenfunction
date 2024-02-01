@@ -302,22 +302,23 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 		}
 		parent.Value = arrVariable
 	case "arrayInteger":
-
 	case "arrayBoolean":
 	case "string":
-		parent.Value = fmt.Sprintf("%v", valueToAssign.Value)
+		parent.Value = convertToString(valueToAssign.Value)
 	case "integer":
-		intVal, err := strconv.ParseInt(fmt.Sprintf("%v", valueToAssign.Value), 10, 64)
+		intVal, err := convertToInt64(valueToAssign.Value)
 		if err != nil {
+			assigner.Logger.Error("AssignValue", zenlogger.ZenField{Key: "error", Value: err.Error()})
 			parent.Value = 0
 		} else {
-
 			parent.Value = intVal
 		}
 	case "boolean":
 		parent.Value = valueToAssign.Value.(bool)
+	case "float":
+
 	default:
-		parent.VarType = fmt.Sprintf("%v", valueToAssign.Value)
+		parent.Value = fmt.Sprintf("%v", valueToAssign.Value)
 	}
 
 	assigned = parent.Value
@@ -325,11 +326,18 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 	return
 }
 
-func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, err error) {
+func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, err error) {
+	str := fmt.Sprintf("%v", funcArg)
 	assigner.Logger.Debug("ReadCommand", zenlogger.ZenField{Key: "str", Value: str})
 
+	// return if there is no function used
+	if isArgumentOrganic(funcArg) {
+		arg = funcArg
+		return
+	}
+
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat|basicAuth)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -645,6 +653,17 @@ func (assigner *DefaultAssigner) coreReadCommand(str string) (arg interface{}, e
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "basicAuth":
+				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result, err := assigner.BasicAuth(subArg)
+				if err != nil {
+					assigner.Logger.Error("execute basicAuth", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				} else {
+					// replace the string from raw function to its result
+					result = escapedCommas(result)
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "concat":
 				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
