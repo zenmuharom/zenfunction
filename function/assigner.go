@@ -337,7 +337,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	}
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat|basicAuth)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat|basicAuth|strtolower)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -690,6 +690,22 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "strtolower":
+				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					result = assigner.Strtolower(subArg)
+				}
+
+				// replace the string from raw function to its result
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
