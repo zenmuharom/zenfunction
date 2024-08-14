@@ -337,7 +337,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	}
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|concat|basicAuth|strtolower)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|sha256|concat|basicAuth|strtolower)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -653,6 +653,17 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "sha256":
+				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result, err := assigner.Sha256(subArg)
+				if err != nil {
+					assigner.Logger.Error("execute sha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				} else {
+					// replace the string from raw function to its result
+					result = escapedCommas(result)
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "basicAuth":
 				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result, err := assigner.BasicAuth(subArg)
