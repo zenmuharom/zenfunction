@@ -337,7 +337,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	}
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|sha256|concat|basicAuth|strtolower)\b`)
+	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|sha256|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
 	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
@@ -531,6 +531,166 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "lpz":
+				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitWithEscapedCommas(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr <= 1 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					// set index from from arg
+					length := 0
+
+					if err == nil {
+						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+						if err != nil {
+							assigner.Logger.Error(err.Error())
+						}
+					}
+
+					if err == nil {
+						result, err = assigner.Lpz(subArgArr[0], length)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.Logger.Error("execute lpz", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
+				}
+
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "rpz":
+				assigner.Logger.Debug("execute rpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitWithEscapedCommas(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr <= 1 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					// set index from from arg
+					length := 0
+
+					if err == nil {
+						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+						if err != nil {
+							assigner.Logger.Error(err.Error())
+						}
+					}
+
+					if err == nil {
+						result, err = assigner.Rpz(subArgArr[0], length)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.Logger.Error("execute rpz", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
+				}
+
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute rpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "lps":
+				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitWithEscapedCommas(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr <= 1 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					// set index from from arg
+					length := 0
+
+					if err == nil {
+						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+						if err != nil {
+							assigner.Logger.Error(err.Error())
+						}
+					}
+
+					if err == nil {
+						result, err = assigner.Lps(subArgArr[0], length)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.Logger.Error("execute lps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
+				}
+
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "rps":
+				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitWithEscapedCommas(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr <= 1 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					// set index from from arg
+					length := 0
+
+					if err == nil {
+						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+						if err != nil {
+							assigner.Logger.Error(err.Error())
+						}
+					}
+
+					if err == nil {
+						result, err = assigner.Rps(subArgArr[0], length)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.Logger.Error("execute rps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
+				}
+
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "randomInt":
 				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
