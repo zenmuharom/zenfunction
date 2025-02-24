@@ -1,6 +1,7 @@
 package function
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -337,8 +338,11 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	}
 
 	// Create regular expressions to match function names and their arguments
-	funcRe := regexp.MustCompile(`\b(ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|json_decode|md5|sha1|sha256|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
-	// argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
+	// funcRe := regexp.MustCompile(`\b(json_decode|addPropertyToArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
+	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
+	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
+
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -888,6 +892,96 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "addPropertyToArray":
+				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+				var jsonArrayStr, propName, funcCall string
+				subArg = strings.TrimSpace(subArg)
+				// If the argument starts with a JSON array, extract it properly.
+				if strings.HasPrefix(subArg, "[") {
+					depth := 0
+					pos := -1
+					for i, ch := range subArg {
+						if ch == '[' {
+							depth++
+						} else if ch == ']' {
+							depth--
+							if depth == 0 {
+								pos = i
+								break
+							}
+						}
+					}
+					if pos == -1 {
+						err = errors.New("invalid JSON array in addPropertyToArray")
+						result = "invalid JSON array"
+						break
+					}
+					jsonArrayStr = subArg[:pos+1]
+					remainder := strings.TrimSpace(subArg[pos+1:])
+					if strings.HasPrefix(remainder, ",") {
+						remainder = strings.TrimSpace(remainder[1:])
+					}
+					parts := strings.SplitN(remainder, ",", 2)
+					if len(parts) < 2 {
+						err = errors.New("invalid parameter for addPropertyToArray, missing property name or function call")
+						result = "invalid parameter"
+						break
+					}
+					propName = strings.TrimSpace(parts[0])
+					funcCall = strings.TrimSpace(parts[1])
+				} else {
+					// Fallback if JSON array is not recognized at start.
+					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					if len(argArr) < 3 {
+						result = "invalid parameter"
+						err = errors.New(result)
+						break
+					}
+					jsonArrayStr = strings.TrimSpace(argArr[0])
+					propName = strings.TrimSpace(argArr[1])
+					funcCall = strings.TrimSpace(argArr[2])
+				}
+
+				// Unmarshal the JSON array.
+				var arr []map[string]interface{}
+				if jsonErr := json.Unmarshal([]byte(jsonArrayStr), &arr); jsonErr != nil {
+					assigner.Logger.Error("execute addPropertyToArray", zenlogger.ZenField{Key: "error", Value: jsonErr.Error()})
+					result = "invalid JSON array"
+					err = jsonErr
+				} else {
+					// Iterate through each object in the array.
+					for i, item := range arr {
+						var newVal interface{}
+						itemFuncCall := funcCall
+						// If the function call is prefixed with "item.", remove the prefix.
+						if strings.HasPrefix(itemFuncCall, "item.") {
+							itemFuncCall = itemFuncCall[len("item."):]
+						}
+						// Now call coreReadCommand recursively with the (possibly modified) function call.
+						newVal, err = assigner.coreReadCommand(itemFuncCall)
+						if err != nil {
+							assigner.Logger.Error("execute addPropertyToArray", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							break
+						}
+						// Add the new property; we store the value as a string to match the expected output.
+						item[propName] = fmt.Sprintf("%v", newVal)
+						arr[i] = item
+					}
+					if err == nil {
+						var marshalResult []byte
+						marshalResult, err = json.Marshal(arr)
+						if err != nil {
+							assigner.Logger.Error("execute addPropertyToArray", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							result = "error marshalling result"
+						} else {
+							result = string(marshalResult)
+						}
+					}
+				}
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
