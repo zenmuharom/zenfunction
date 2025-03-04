@@ -342,7 +342,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -830,7 +830,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "sha256":
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.Sha256(subArg)
+				args := strings.Split(subArg, ",")
+				result, err := assigner.Sha256(args...)
 				if err != nil {
 					assigner.Logger.Error("execute sha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
@@ -839,6 +840,48 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "hmacSha256":
+				result := ""
+				assigner.Logger.Debug("execute hmacSha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				args := strings.Split(subArg, "|")
+				if len(args) != 2 {
+					err := errors.New("invalid number of arguments")
+					assigner.Logger.Error("execute hmacSha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				} else {
+					result, err = assigner.hmacSha256(strings.TrimSpace(args[0]), strings.TrimSpace(args[1]))
+					if err != nil {
+						assigner.Logger.Error("execute hmacSha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					} else {
+						// replace the string from raw function to its result
+						result = escapedCommas(result)
+						str = str[:funcStart] + result + str[argEnd+1:]
+					}
+				}
+
+				assigner.Logger.Debug("execute hmacSha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "encryptWithPrivateKey":
+				result := ""
+				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				args := strings.Split(subArg, ",")
+
+				if len(args) != 2 {
+					err = errors.New("invalid number of arguments")
+					assigner.Logger.Error("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					return str, err
+				}
+
+				// Perform encryption
+				result, err = assigner.EncryptWithPrivateKey(strings.TrimSpace(args[0]), strings.TrimSpace(args[1]))
+				if err != nil {
+					assigner.Logger.Error("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					return str, err
+				}
+
+				// Replace the string from raw function to its result
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "basicAuth":
 				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result, err := assigner.BasicAuth(subArg)
