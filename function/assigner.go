@@ -342,7 +342,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -1025,6 +1025,19 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "lengthArray":
+				assigner.Logger.Debug("execute lengthArray", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := "0"
+				length, err := assigner.LengthArray(subArg)
+				if err != nil {
+					assigner.Logger.Error("execute lengthArray", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				} else {
+					result = fmt.Sprintf("%v", length)
+					// replace the string from raw function to its result
+					result = escapedCommas(result)
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+				assigner.Logger.Debug("execute lengthArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			}
 		}
 		loop++
