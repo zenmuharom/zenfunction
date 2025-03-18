@@ -342,7 +342,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
 	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -535,6 +535,44 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "replaceAll":
+				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					fmt.Println("kosong")
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitWithEscapedCommas(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr < 2 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					replaceTo := ""
+
+					if err == nil {
+
+						if lenSubArgArr == 3 {
+							replaceTo = subArgArr[2]
+						}
+
+						result, err = assigner.ReplaceAll(subArgArr[0], subArgArr[1], replaceTo)
+						if err != nil {
+							// show log error if function fail to executed
+							assigner.Logger.Error("execute replaceAll", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						}
+					}
+
+				}
+
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lpz":
 				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -741,6 +779,20 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "uuid":
+				assigner.Logger.Debug("execute uuid", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				result, err = assigner.Uuid()
+				if err != nil {
+					assigner.Logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
+				}
+
+				// replace the string from raw function to its result
+				result = escapedCommas(result)
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute uuid", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateNow":
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result, err := assigner.DateNow(subArg)
