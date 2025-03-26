@@ -393,7 +393,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 		}
 
 		if argMatch[1:len(argMatch)-1] != "" {
-			assigner.Logger.Debug(fmt.Sprintf("send to coreReadCommand: %v", subArg))
+			assigner.Logger.Debug(fmt.Sprintf("send to coreReadCommand: %q", subArg))
 			subArgI, err = assigner.coreReadCommand(subArg)
 			if err != nil {
 				assigner.Logger.Error(err.Error())
@@ -534,7 +534,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
-				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: fmt.Sprintf("%q", result)}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "replaceAll":
 				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
