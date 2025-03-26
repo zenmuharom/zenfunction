@@ -47,7 +47,7 @@ func TestSubstr(t *testing.T) {
 			Expected: "512233350072",
 		},
 		{
-			Input:    "substr(FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile, 0, 18)",
+			Input:    "substr(FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile, 0, 19)",
 			Expected: "FINNET - MUAMALAT\\",
 		},
 	}
