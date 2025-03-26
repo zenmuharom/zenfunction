@@ -43,6 +43,10 @@ func TestReadCommand(t *testing.T) {
 			Input:    "trim(substr(1267345625003090001303GAYCGKDPS 7502208061803GAYCGKDPS 7502208061803GAYCGKDPS 75022080618IDHAM DHIYAULHAQ HABIBI       ABC123         , 89, 30))",
 			Expected: "IDHAM DHIYAULHAQ HABIBI",
 		},
+		{
+			Input:    "substr(FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:, 0, 18)",
+			Expected: "IDHAM DHIYAULHAQ HABIBI",
+		},
 	}
 
 	for noTest, tc := range testCases {

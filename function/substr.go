@@ -9,9 +9,9 @@ import (
 
 func (assigner *DefaultAssigner) Substr(arg string, from int, to int) (substred string, err error) {
 	argType := reflect.ValueOf(arg)
-	assigner.Logger.Debug("Substr", zenlogger.ZenField{Key: "arg", Value: fmt.Sprintf("%v", arg)}, zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to}, zenlogger.ZenField{Key: "kind", Value: argType.Kind().String()})
+	assigner.Logger.Debug("Substr", zenlogger.ZenField{Key: "arg", Value: fmt.Sprintf("%q", arg)}, zenlogger.ZenField{Key: "from", Value: from}, zenlogger.ZenField{Key: "to", Value: to}, zenlogger.ZenField{Key: "kind", Value: argType.Kind().String()})
 
-	until := len(fmt.Sprintf("%v", arg))
+	until := len(arg)
 
 	// validasi start of range substring
 	if from > until {
@@ -23,6 +23,6 @@ func (assigner *DefaultAssigner) Substr(arg string, from int, to int) (substred 
 		until = from + to
 	}
 
-	substred = fmt.Sprintf("%v", arg)[from:until]
+	substred = arg[from:until]
 	return
 }
