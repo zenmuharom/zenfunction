@@ -14,10 +14,17 @@ func (assigner *DefaultAssigner) RandomInt(from, to int) (generated string, err 
 		from = 0
 	}
 	re := regexp.MustCompile(`[a-z,-]`)
-	id := uuid.New().String()
+	id0 := uuid.New().String()
+	id1 := uuid.New().String()
 	if to < from {
 		to = from
 	}
-	generated = re.ReplaceAllString(id, "")[from:to]
+
+	generatedID0 := re.ReplaceAllString(id0, "")
+	generatedID1 := re.ReplaceAllString(id1, "")
+
+	ids := generatedID0 + generatedID1
+
+	generated = re.ReplaceAllString(ids, "")[from:to]
 	return
 }

@@ -22,11 +22,11 @@ func TestTrim(t *testing.T) {
 			Expected: "7",
 		},
 		{
-			Input:    "trim(   hayo loooo   )",
+			Input:    "trim(\"   hayo loooo   \")",
 			Expected: "hayo loooo",
 		},
 		{
-			Input:    "trim(zzzzwoi taizzzzzz, z)",
+			Input:    "trim(\"zzzzwoi taizzzzzz\", z)",
 			Expected: "woi tai",
 		},
 		{

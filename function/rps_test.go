@@ -14,11 +14,11 @@ func Test_Rps(t *testing.T) {
 
 	testCases := []TestCase{
 		{
-			Input:    "rps(zeni, 10)",
+			Input:    "rps(\"zeni\", 10)",
 			Expected: "zeni      ",
 		},
 		{
-			Input:    "rps(zeni, 2)",
+			Input:    "rps(\"zeni\", 2)",
 			Expected: "zeni",
 		},
 	}

@@ -14,7 +14,7 @@ func TestLtrim(t *testing.T) {
 
 	testCases := []TestCase{
 		{
-			Input:    "ltrim(          halooooo       )",
+			Input:    "ltrim(\"          halooooo       \")",
 			Expected: "halooooo       ",
 		},
 		{

@@ -14,11 +14,11 @@ func Test_Rpz(t *testing.T) {
 
 	testCases := []TestCase{
 		{
-			Input:    "rpz(zeni, 10)",
+			Input:    "rpz(\"zeni\", 10)",
 			Expected: "zeni000000",
 		},
 		{
-			Input:    "rpz(zeni, 2)",
+			Input:    "rpz(\"zeni\", 2)",
 			Expected: "zeni",
 		},
 	}

@@ -14,8 +14,16 @@ func TestConcat(t *testing.T) {
 
 	TestCase := []TestCase{
 		{
-			Input:    "concat(\"hallo\", \"anjing\", \"woi\")",
-			Expected: "hallo anjing woi errs",
+			Input:    "concat(\"hallo \", \"anjing \", \"woi 1 \")",
+			Expected: "hallo anjing woi 1 ",
+		},
+		{
+			Input:    "concat(\"hallo\", \"anjing\", \"woi2\")",
+			Expected: "halloanjingwoi2",
+		},
+		{
+			Input:    "concat(\"hallo, anjing\", woi3)",
+			Expected: "hallo, anjingwoi3",
 		},
 	}
 

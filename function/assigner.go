@@ -343,13 +343,20 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
-	argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
+	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
 	loop := 0
 	for {
+		if loop > 10 {
+			err = fmt.Errorf("infinite loop detected in coreReadCommand")
+			assigner.Logger.Error("Infinite loop detected in coreReadCommand")
+			return
+		}
+
 		// Find the first match of a function name in the string
 		funcMatch := funcRe.FindString(str)
+		funcMatch = strings.TrimSpace(funcMatch)
 		if funcMatch == "" {
 			break
 		}
@@ -358,17 +365,46 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 		funcStart := funcRe.FindStringIndex(str)[0]
 		argStart := funcStart + len(funcMatch)
 
-		argMatches := argRe.FindStringSubmatch(str[argStart:])
 		argMatch := ""
-		if len(argMatches) == 0 {
+		depth := 0
+		inString := false
+		escape := false
+		for i := argStart; i < len(str); i++ {
+			ch := str[i]
+
+			if ch == '\\' && !escape {
+				escape = true
+				continue
+			}
+
+			if ch == '"' && !escape {
+				inString = !inString
+			}
+
+			if !inString {
+				if ch == '(' {
+					if depth == 0 {
+						argStart = i
+					}
+					depth++
+				} else if ch == ')' {
+					depth--
+					if depth == 0 {
+						argMatch = str[argStart : i+1]
+						break
+					}
+				}
+			}
+			escape = false
+		}
+
+		if argMatch == "" {
+			// fallback / error handling
 			result := funcMatch
-			// replace the string from raw function to its result
 			str = str[:funcStart] + result
 			break
 		}
 
-		// set argument part to variable
-		argMatch = argMatches[0]
 		argEnd := argStart + len(argMatch) - 1
 
 		// Print the function name and argument list
@@ -417,7 +453,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					argArr := splitArgs(subArg)
 					lenArgArr := len(argArr)
 					char := " "
 
@@ -449,7 +485,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				var argArr []string
 				if subArg != "" {
-					argArr = splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					argArr = splitArgs(subArg)
 				}
 				lenArgArr := len(argArr)
 
@@ -485,7 +521,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
+
+					fmt.Println(fmt.Sprintf("%#v", subArgArr))
 
 					lenSubArgArr := len(subArgArr)
 
@@ -540,11 +578,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				result := ""
 
 				if subArg == "" {
-					fmt.Println("kosong")
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
+
+					fmt.Println(fmt.Sprintf("%q", subArgArr))
 
 					lenSubArgArr := len(subArgArr)
 
@@ -581,7 +620,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
 
 					lenSubArgArr := len(subArgArr)
 
@@ -621,7 +660,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
 
 					lenSubArgArr := len(subArgArr)
 
@@ -661,7 +700,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
 
 					lenSubArgArr := len(subArgArr)
 
@@ -701,7 +740,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					subArgArr := splitWithEscapedCommas(subArg)
+					subArgArr := splitArgs(subArg)
 
 					lenSubArgArr := len(subArgArr)
 
@@ -743,7 +782,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					from = 0
 					to = 17
 				} else {
-					subArgArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					subArgArr := splitArgs(subArg)
 
 					if len(subArgArr) <= 2 { // if argument 1 or 2
 						from, err3 := strconv.Atoi(strings.TrimSpace(subArgArr[0]))
@@ -788,6 +827,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					assigner.Logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				}
 
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
@@ -799,6 +841,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
+
+					// wrap with quotes for safe splitArgs usage
+					result = fmt.Sprintf("\"%s\"", result)
+
 					// replace the string from raw function to its result
 					result = escapedCommas(result)
 					str = str[:funcStart] + result + str[argEnd+1:]
@@ -807,17 +853,11 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 			case "dateAdd":
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
-				argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+				argArr := splitArgs(subArg)
 
-				if len(argArr) > 4 { // if parameter more than needed
-					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
-					result = "invalid parameter"
-					err = errors.New(result)
-				} else if len(argArr) < 4 { // if parameter less than needed
-					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
-					result = "invalid parameter"
-					err = errors.New(result)
-				} else { // if parameter match with needed
+				fmt.Println(len(argArr))
+
+				if len(argArr) == 4 {
 					add, errAdd := strconv.Atoi(strings.TrimSpace(argArr[2]))
 					if errAdd != nil {
 						assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: err.Error()})
@@ -826,7 +866,14 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					if err != nil {
 						assigner.Logger.Error(err.Error())
 					}
+				} else {
+					assigner.Logger.Error("execute dateAdd", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
+					result = "invalid parameter"
+					err = errors.New(result)
 				}
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
 
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
@@ -836,7 +883,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 			case "dateFormat":
 				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
-				argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+				argArr := splitArgs(subArg)
 
 				if len(argArr) > 3 { // if parameter more than needed
 					assigner.Logger.Error("execute dateFormat", zenlogger.ZenField{Key: "error", Value: "invalid parameter"})
@@ -882,7 +929,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "sha256":
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				args := strings.Split(subArg, ",")
+				args := splitArgs(subArg)
 				result, err := assigner.Sha256(args...)
 				if err != nil {
 					assigner.Logger.Error("execute sha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
@@ -953,7 +1000,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					argArr := splitArgs(subArg)
 					lenArgArr := len(argArr)
 
 					if lenArgArr == 0 {
@@ -1027,7 +1074,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					funcCall = strings.TrimSpace(parts[1])
 				} else {
 					// Fallback if JSON array is not recognized at start.
-					argArr := splitWithEscapedCommas(fmt.Sprintf("%v", subArg))
+					argArr := splitArgs(subArg)
 					if len(argArr) < 3 {
 						result = "invalid parameter"
 						err = errors.New(result)

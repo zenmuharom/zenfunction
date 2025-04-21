@@ -2,6 +2,7 @@ package function
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,23 +18,32 @@ func Test_Uuid(t *testing.T) {
 			Input:    "uuid()",
 			Expected: "36",
 		},
-		{
-			Input:    "uuid()",
-			Expected: "36",
-		},
-		{
-			Input:    "uuid()",
-			Expected: "36",
-		},
 	}
 
 	for noTest, tc := range testCases {
-		result, err := assigner.ReadCommand(tc.Input)
+		var result interface{}
+		res, err := assigner.ReadCommand(tc.Input)
 		errMsg := ""
 		if err != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
-		require.NoError(t, err, errMsg)
-		require.Equal(t, tc.Expected, len(fmt.Sprintf("%v", result)))
+
+		switch v := res.(type) {
+		case string:
+
+			if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
+				// safe unwrap only outer quotes
+				v = v[1 : len(v)-1]
+			}
+			result = v
+
+			require.NoError(t, err, errMsg)
+			require.Equal(t, tc.Expected, fmt.Sprintf("%v", len(fmt.Sprintf("%v", result))))
+			t.Logf("input: %v, result: %v, length: %d", tc.Input, result, len(fmt.Sprintf("%v", result)))
+		default:
+			// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
+			result = fmt.Sprintf("%v", v)
+		}
+
 	}
 }

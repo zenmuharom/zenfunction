@@ -15,15 +15,15 @@ func Test_ReplaceAll(t *testing.T) {
 	testCases := []TestCase{
 		{
 			Input:    "replaceAll(uuid(),-)",
-			Expected: "36",
+			Expected: "32",
 		},
 		{
-			Input:    "replaceAll(uuid(),-)",
-			Expected: "36",
+			Input:    "replaceAll(uuid(),\"-\")",
+			Expected: "32",
 		},
 		{
-			Input:    "replaceAll(uuid(),-)",
-			Expected: "36",
+			Input:    "replaceAll(uuid(),\"-\")",
+			Expected: "32",
 		},
 	}
 
@@ -34,6 +34,6 @@ func Test_ReplaceAll(t *testing.T) {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 		require.NoError(t, err, errMsg)
-		require.Equal(t, tc.Expected, result)
+		require.Equal(t, tc.Expected, fmt.Sprintf("%v", len(fmt.Sprintf("%v", result))))
 	}
 }
