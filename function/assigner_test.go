@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/zenmuharom/zenfunction/variable"
 	"github.com/zenmuharom/zenlogger"
 )
 
@@ -33,7 +34,7 @@ func TestReadCommand(t *testing.T) {
 		},
 		{
 			Input:    "dateAdd(\"2006/01/02\", dateNow(), 30, day)",
-			Expected: "2025/05/21",
+			Expected: time.Now().AddDate(0, 0, 30).Format("2006/01/02"),
 		},
 		{
 			Input:    "substr(dateAdd(2006, dateNow(2006), 1, year), 0, 2)",
@@ -74,6 +75,11 @@ func TestReadCommand(t *testing.T) {
 		}
 
 		require.NoError(t, err, errMsg)
-		require.Equal(t, tc.Expected, result)
+
+		res2, err2 := assigner.ReadCommandV2(variable.TYPE_STRING, tc.Input)
+		if err2 != nil {
+			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
+		}
+		require.Equal(t, tc.Expected, res2)
 	}
 }

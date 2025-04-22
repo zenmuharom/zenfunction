@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/zenmuharom/zenfunction/domain"
+	"github.com/zenmuharom/zenfunction/variable"
 	"github.com/zenmuharom/zenlogger"
 )
 
@@ -19,11 +20,66 @@ type DefaultAssigner struct {
 
 type Assigner interface {
 	ReadCommand(arg string) (returnVal interface{}, err error)
+	ReadCommandV2(dType, arg string) (returnVal any, err error)
 	findArg(command string) (argument string)
 }
 
 func NewAssigner(logger zenlogger.Zenlogger) Assigner {
 	return &DefaultAssigner{Logger: logger}
+}
+
+func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err error) {
+	arg, err = assigner.coreReadCommand(str)
+	if err != nil {
+		assigner.Logger.Error(err.Error())
+	} else {
+		refValue := reflect.ValueOf(arg)
+		if refValue.Kind() == reflect.String {
+			arg = unEscapedCommas(fmt.Sprintf("%v", arg))
+		}
+	}
+	return
+}
+
+func (assigner *DefaultAssigner) ReadCommandV2(dType, str string) (result any, err error) {
+	res, err_ := assigner.coreReadCommand(str)
+	if err_ != nil {
+		assigner.Logger.Error(err_.Error())
+		err = err_
+		return
+	} else {
+
+		switch dType {
+		case variable.TYPE_STRING:
+			switch v := res.(type) {
+			case string:
+
+				if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
+					// safe unwrap only outer quotes
+					v = v[1 : len(v)-1]
+				}
+				result = v
+			default:
+				// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
+				result = fmt.Sprintf("%v", v)
+			}
+		default:
+			switch v := res.(type) {
+			case string:
+
+				if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
+					// safe unwrap only outer quotes
+					v = v[1 : len(v)-1]
+				}
+				result = v
+			default:
+				// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
+				result = fmt.Sprintf("%v", v)
+			}
+		}
+
+	}
+	return
 }
 
 func (assigner *DefaultAssigner) ValidityConditionField(config domain.ValueConfig, valueToCompare interface{}) (valid bool) {
@@ -474,6 +530,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
@@ -508,6 +567,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
@@ -522,8 +584,6 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					err = errors.New(result)
 				} else {
 					subArgArr := splitArgs(subArg)
-
-					fmt.Println(fmt.Sprintf("%#v", subArgArr))
 
 					lenSubArgArr := len(subArgArr)
 
@@ -570,7 +630,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: fmt.Sprintf("%q", result)}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "replaceAll":
@@ -609,7 +674,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lpz":
@@ -649,7 +719,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "rpz":
@@ -689,7 +764,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute rpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lps":
@@ -729,7 +809,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "rps":
@@ -769,7 +854,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "randomInt":
@@ -842,11 +932,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
 
+					// replace the string from raw function to its result
+					result = escapedCommas(result)
+
 					// wrap with quotes for safe splitArgs usage
 					result = fmt.Sprintf("\"%s\"", result)
 
-					// replace the string from raw function to its result
-					result = escapedCommas(result)
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -872,11 +963,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					err = errors.New(result)
 				}
 
+				// replace the string from raw function to its result
+				result = escapedCommas(result)
+
 				// wrap with quotes for safe splitArgs usage
 				result = fmt.Sprintf("\"%s\"", result)
 
-				// replace the string from raw function to its result
-				result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -902,6 +994,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -913,6 +1009,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				} else {
 					// replace the string from raw function to its result
 					result = escapedCommas(result)
+
+					// wrap with quotes for safe splitArgs usage
+					result = fmt.Sprintf("\"%s\"", result)
+
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -922,8 +1022,13 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute sha1", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
+
 					// replace the string from raw function to its result
 					result = escapedCommas(result)
+
+					// wrap with quotes for safe splitArgs usage
+					result = fmt.Sprintf("\"%s\"", result)
+
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -934,8 +1039,13 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute sha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
+
 					// replace the string from raw function to its result
 					result = escapedCommas(result)
+
+					// wrap with quotes for safe splitArgs usage
+					result = fmt.Sprintf("\"%s\"", result)
+
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -951,8 +1061,13 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					if err != nil {
 						assigner.Logger.Error("execute hmacSha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					} else {
+
 						// replace the string from raw function to its result
 						result = escapedCommas(result)
+
+						// wrap with quotes for safe splitArgs usage
+						result = fmt.Sprintf("\"%s\"", result)
+
 						str = str[:funcStart] + result + str[argEnd+1:]
 					}
 				}
@@ -976,8 +1091,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					return str, err
 				}
 
-				// Replace the string from raw function to its result
+				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -989,6 +1108,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				} else {
 					// replace the string from raw function to its result
 					result = escapedCommas(result)
+
+					// wrap with quotes for safe splitArgs usage
+					result = fmt.Sprintf("\"%s\"", result)
+
 					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -1015,6 +1138,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -1026,11 +1153,22 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					result = assigner.Strtolower(subArg)
+					argArr := splitArgs(subArg)
+					lenArgArr := len(argArr)
+
+					if lenArgArr == 1 {
+						result = assigner.Strtolower(argArr[0])
+					} else {
+						result = "invalid parameter"
+					}
 				}
 
 				// replace the string from raw function to its result
 				result = escapedCommas(result)
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -1151,19 +1289,6 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 		arg = str
 	}
 
-	return
-}
-
-func (assigner *DefaultAssigner) ReadCommand(str string) (arg interface{}, err error) {
-	arg, err = assigner.coreReadCommand(str)
-	if err != nil {
-		assigner.Logger.Error(err.Error())
-	} else {
-		refValue := reflect.ValueOf(arg)
-		if refValue.Kind() == reflect.String {
-			arg = unEscapedCommas(fmt.Sprintf("%v", arg))
-		}
-	}
 	return
 }
 
