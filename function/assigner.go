@@ -1259,7 +1259,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 						}
 					}
 				}
-				result = escapedCommas(result)
+
+				// result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lengthArray":

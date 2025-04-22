@@ -30,12 +30,15 @@ func TestAddProperty(t *testing.T) {
 	}
 
 	for noTest, tc := range testCases {
-		result, err := assigner.ReadCommand(tc.Input)
+		result, err := assigner.ReadCommandV2("array", tc.Input)
 		errMsg := ""
 		if err != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 		require.NoError(t, err, errMsg)
+
+		fmt.Println(result)
+
 		if result != "invalid parameter" {
 			var resArr []any
 			e := json.Unmarshal([]byte(fmt.Sprintf("%v", result)), &resArr)
