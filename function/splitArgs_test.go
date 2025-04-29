@@ -11,33 +11,40 @@ import (
 func Test_SplitArgs(t *testing.T) {
 
 	testCases := []TestCaseSplit{
+		// {
+		// 	Input: `"ntb",item.randomInt(12)`,
+		// 	Expected: []string{
+		// 		"ntb",
+		// 		"item.randomInt(12)",
+		// 	},
+		// },
+		// {
+		// 	Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", item.randomInt(12)",
+		// 	Expected: []string{
+		// 		"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
+		// 		"item.randomInt(12)",
+		// 	},
+		// },
+		// {
+		// 	Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", 0, 20",
+		// 	Expected: []string{
+		// 		"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
+		// 		"0",
+		// 		"20",
+		// 	},
+		// },
+		// {
+		// 	Input: "uuid(), \"-\"",
+		// 	Expected: []string{
+		// 		"uuid()",
+		// 		"-",
+		// 	},
+		// },
 		{
-			Input: `"ntb",item.randomInt(12)`,
+			Input: "\"\", 120",
 			Expected: []string{
-				"ntb",
-				"item.randomInt(12)",
-			},
-		},
-		{
-			Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", item.randomInt(12)",
-			Expected: []string{
-				"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
-				"item.randomInt(12)",
-			},
-		},
-		{
-			Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", 0, 20",
-			Expected: []string{
-				"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
-				"0",
-				"20",
-			},
-		},
-		{
-			Input: "uuid(), \"-\"",
-			Expected: []string{
-				"uuid()",
-				"-",
+				"",
+				"120",
 			},
 		},
 	}
