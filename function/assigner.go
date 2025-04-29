@@ -1091,16 +1091,16 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 			case "encryptWithPrivateKey":
 				result := ""
 				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				args := strings.Split(subArg, ",")
+				subArgArr := splitArgs(subArg)
 
-				if len(args) != 2 {
+				if len(subArgArr) != 2 {
 					err = errors.New("invalid number of arguments")
 					assigner.Logger.Error("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					return str, err
 				}
 
 				// Perform encryption
-				result, err = assigner.EncryptWithPrivateKey(strings.TrimSpace(args[0]), strings.TrimSpace(args[1]))
+				result, err = assigner.EncryptWithPrivateKey(strings.TrimSpace(subArgArr[0]), strings.TrimSpace(subArgArr[1]))
 				if err != nil {
 					assigner.Logger.Error("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					return str, err
