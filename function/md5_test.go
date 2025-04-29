@@ -15,12 +15,16 @@ func Test_MD5(t *testing.T) {
 
 	testCases := []TestCase{
 		{
-			Input:    "md5(Darmaj4y4)",
+			Input:    "md5(\"Darmaj4y4\")",
 			Expected: "3c63e9db65160b08944286486f6f0672",
 		},
 		{
-			Input:    "md5(bangsat)",
+			Input:    "md5(\"bangsat\")",
 			Expected: "528f980649c80a7269402447b51e815a",
+		},
+		{
+			Input:    "md5(\"210020250429111311224559FINNET501001000006106174468792427953000000000000000DwZ3cOwCt22CzOgaghCnKdw0DIGceg5WapkOIPcziqCIX\")",
+			Expected: "7676b5f7aecbb596f6935fcb6e0a6662",
 		},
 	}
 

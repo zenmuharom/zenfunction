@@ -17,7 +17,7 @@ func (assigner *DefaultAssigner) MD5(arg string) (hashed string, err error) {
 	// Write the data to the hasher
 	_, err = hasher.Write(data)
 	if err != nil {
-		assigner.Logger.Error("JsonDecode", zenlogger.ZenField{Key: "error", Value: err.Error()})
+		assigner.Logger.Error("MD5", zenlogger.ZenField{Key: "error", Value: err.Error()})
 		return
 	}
 

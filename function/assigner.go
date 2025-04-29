@@ -1003,7 +1003,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "md5":
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.MD5(subArg)
+
+				argArr := splitArgs(subArg)
+
+				result, err := assigner.MD5(argArr[0])
 				if err != nil {
 					assigner.Logger.Error("execute md5", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
@@ -1018,7 +1021,10 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "sha1":
 				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.Sha1(subArg)
+
+				argArr := splitArgs(subArg)
+
+				result, err := assigner.Sha1(argArr[0])
 				if err != nil {
 					assigner.Logger.Error("execute sha1", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
