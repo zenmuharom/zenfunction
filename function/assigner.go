@@ -1117,7 +1117,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "basicAuth":
 				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.BasicAuth(subArg)
+				subArgArr := splitArgs(subArg)
+				result, err := assigner.BasicAuth(subArgArr[0])
 				if err != nil {
 					assigner.Logger.Error("execute basicAuth", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
@@ -1138,8 +1139,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					result = "invalid parameter"
 					err = errors.New(result)
 				} else {
-					argArr := splitArgs(subArg)
-					lenArgArr := len(argArr)
+					subArgArr := splitArgs(subArg)
+					lenArgArr := len(subArgArr)
 
 					if lenArgArr == 0 {
 						result = "invalid parameter"
@@ -1147,7 +1148,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 
 					if err == nil {
-						result = assigner.Concat(argArr...)
+						result = assigner.Concat(subArgArr...)
 					}
 				}
 
