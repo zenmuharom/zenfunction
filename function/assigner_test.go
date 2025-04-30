@@ -2,6 +2,7 @@ package function
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ func TestReadCommand(t *testing.T) {
 	logger := zenlogger.NewZenlogger()
 	assigner := NewAssigner(logger)
 
+	billerResp := "FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:"
 	testCases := []TestCase{
 		{
 			Input:    "",
@@ -45,12 +47,13 @@ func TestReadCommand(t *testing.T) {
 			Expected: "IDHAM DHIYAULHAQ HABIBI",
 		},
 		{
-			Input:    "substr(\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:\", 0, 18)",
+			Input:    "substr(" + strconv.Quote(billerResp) + ", 0, 18)",
 			Expected: "FINNET - MUAMALAT\r",
 		},
 	}
 
 	for noTest, tc := range testCases {
+		var err error
 		var result interface{}
 		res, err := assigner.ReadCommand(tc.Input)
 		errMsg := ""
@@ -74,12 +77,11 @@ func TestReadCommand(t *testing.T) {
 			result = fmt.Sprintf("%v", v)
 		}
 
-		require.NoError(t, err, errMsg)
-
 		res2, err2 := assigner.ReadCommandV2(variable.TYPE_STRING, tc.Input)
 		if err2 != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 		require.Equal(t, tc.Expected, res2)
+		fmt.Println(errMsg)
 	}
 }

@@ -3,6 +3,7 @@ package function
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,41 +11,56 @@ import (
 
 func Test_SplitArgs(t *testing.T) {
 
+	billerResp := "FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile"
 	testCases := []TestCaseSplit{
-		// {
-		// 	Input: `"ntb",item.randomInt(12)`,
-		// 	Expected: []string{
-		// 		"ntb",
-		// 		"item.randomInt(12)",
-		// 	},
-		// },
-		// {
-		// 	Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", item.randomInt(12)",
-		// 	Expected: []string{
-		// 		"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
-		// 		"item.randomInt(12)",
-		// 	},
-		// },
-		// {
-		// 	Input: "\"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile\", 0, 20",
-		// 	Expected: []string{
-		// 		"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \\\"Tag\\\" Tepat waktu:|Download PLN Mobile",
-		// 		"0",
-		// 		"20",
-		// 	},
-		// },
-		// {
-		// 	Input: "uuid(), \"-\"",
-		// 	Expected: []string{
-		// 		"uuid()",
-		// 		"-",
-		// 	},
-		// },
+		{
+			Input: "test",
+			Expected: []string{
+				"test",
+			},
+		},
+		{
+			Input: "\"ntb\", item.randomInt(12)",
+			Expected: []string{
+				"ntb",
+				"item.randomInt(12)",
+			},
+		},
+		{
+			Input: strconv.Quote(billerResp) + ", item.randomInt(12)",
+			Expected: []string{
+				"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile",
+				"item.randomInt(12)",
+			},
+		},
+		{
+			Input: strconv.Quote(billerResp) + ", 0, 20",
+			Expected: []string{
+				"FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile",
+				"0",
+				"20",
+			},
+		},
+		{
+			Input: "uuid(), \"-\"",
+			Expected: []string{
+				"uuid()",
+				"-",
+			},
+		},
 		{
 			Input: "\"\", 120",
 			Expected: []string{
 				"",
 				"120",
+			},
+		},
+		{
+			Input: "\"hallo \", \"anjing \", \"woi 1 \"",
+			Expected: []string{
+				"hallo ",
+				"anjing ",
+				"woi 1 ",
 			},
 		},
 	}

@@ -2,6 +2,7 @@ package function
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -13,9 +14,8 @@ func Test_EncryptWithPrivateKey(t *testing.T) {
 	logger := zenlogger.NewZenlogger()
 	assigner := NewAssigner(logger)
 
-	testCases := []TestCase{
-		{
-			Input: `encryptWithPrivateKey(9a698a48-30f9-4801-b39e-6fa43f3f2d94|2025-02-25T13:52:44+07:00, -----BEGIN PRIVATE KEY-----
+	privKey := `
+-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCPMAI+Z/30MZnL
 8EZEXmCB1bxz/bIbAOFrIkaLPjMESGPGJc4cI4B/90MQoL5WRbE7uc2fFIaWJzco
 7CO4H8zPo9iOQ5rfXEyO/49S5DHBw0Wj8p+PvhDQ/XyFCW40gzL9B1UMu4driANV
@@ -42,7 +42,12 @@ NVZkkfBX7sp6kII6J8FggIG7Qub4L26V1X1XNVilAoGAHNzBTVeY+l1eE65Wwlxm
 AIBPZygptzB2Jqs6x5G6kj1+qwdyKhDWXDQr2W5LPl6/iwuwlJS9zyBGYg00/luC
 JzanZ/glRiJVqo23PnVVsnlpKmjYTqXAH+T4xh2imUTKZIE3O1tvji4gL4mFPAZL
 omfZxLVtIe8vpxCJsXIWWr0=
------END PRIVATE KEY-----)`,
+-----END PRIVATE KEY-----	
+	`
+
+	testCases := []TestCase{
+		{
+			Input:    "encryptWithPrivateKey(" + strconv.Quote("9a698a48-30f9-4801-b39e-6fa43f3f2d94|2025-02-25T13:52:44+07:00") + ", " + privKey + ")",
 			Expected: "Wi6dGrkoi2f1GvyPtQgt2+wXakSMfb8mDt1mhKKHiTsK4i/67lAtzbzV/iIOzC6/VFrXdBdGnC7ZX6iicOIq7i/AIxg7hArvTLuq30UxmhFLMkTwxkrTmc8FuRKeDumQAE51RGvm/4LlPAZsX+fY4PvbKYwXSTfkyXuk18pRQb50ZPrXc2ntjr24B9vEXK8uaxEz03kLMV/v9oprCcSSxI9Kl0Yf57mTp643xg0s6jEHE0dPaioV2iY0dXnREXwAbFrXPkQjp1RuhwTbhz8aNhtipq0HuzLVtv6DiAEz5R6iFK356KOjHy/luteC7H3xv7jWytWeUG53EpGY6LWkag==",
 		},
 	}

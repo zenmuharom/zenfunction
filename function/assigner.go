@@ -404,7 +404,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// Iterate over the string and extract nested function calls
 	loop := 0
 	for {
-		if loop > 10 {
+		if loop > 100 {
 			err = fmt.Errorf("infinite loop detected in coreReadCommand")
 			assigner.Logger.Error("Infinite loop detected in coreReadCommand")
 			return
@@ -1127,7 +1127,12 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// Perform encryption
-				result, err = assigner.EncryptWithPrivateKey(strings.TrimSpace(subArgArr[0]), strings.TrimSpace(subArgArr[1]))
+				privKey, ee := strconv.Unquote(subArgArr[1])
+				if ee != nil {
+					assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "info", Value: "there is no escaped character"})
+					privKey = subArgArr[1]
+				}
+				result, err = assigner.EncryptWithPrivateKey(strings.TrimSpace(subArgArr[0]), strings.TrimSpace(privKey))
 				if err != nil {
 					assigner.Logger.Error("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					return str, err

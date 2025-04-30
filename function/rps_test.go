@@ -2,6 +2,7 @@ package function
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -29,6 +30,10 @@ func Test_Rps(t *testing.T) {
 		{
 			Input:    "rps(\"\", 120)",
 			Expected: "                                                                                                                        ",
+		},
+		{
+			Input:    "rps(" + strconv.Quote("FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:") + ", 120)",
+			Expected: "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:                                          ",
 		},
 	}
 
