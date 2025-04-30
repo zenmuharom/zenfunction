@@ -22,6 +22,10 @@ func Test_Lpz(t *testing.T) {
 			Input:    "lpz(zeni, 2)",
 			Expected: "zeni",
 		},
+		{
+			Input:    "lpz(\"\", 4)",
+			Expected: "0000",
+		},
 	}
 
 	for noTest, tc := range testCases {

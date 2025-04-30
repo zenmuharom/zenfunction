@@ -22,6 +22,10 @@ func Test_Rpz(t *testing.T) {
 			Input:    "rpz(\"zeni\", 2)",
 			Expected: "zeni",
 		},
+		{
+			Input:    "rpz(\"\", 2)",
+			Expected: "00",
+		},
 	}
 
 	for noTest, tc := range testCases {

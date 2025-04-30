@@ -694,26 +694,35 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 					lenSubArgArr := len(subArgArr)
 
-					if lenSubArgArr <= 1 {
-						result = "invalid parameter"
-						err = errors.New(result)
-					}
-
 					// set index from from arg
 					length := 0
+					text := ""
 
 					if err == nil {
-						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
-						if err != nil {
-							assigner.Logger.Error(err.Error())
+						if lenSubArgArr < 1 {
+							result = "invalid parameter"
+							err = errors.New(result)
+						} else if lenSubArgArr == 1 {
+							text = ""
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[0]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
+
+						} else {
+							text = subArgArr[0]
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
 						}
-					}
 
-					if err == nil {
-						result, err = assigner.Lpz(subArgArr[0], length)
-						if err != nil {
-							// show log error if function fail to executed
-							assigner.Logger.Error("execute lpz", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						if err == nil {
+							result, err = assigner.Lpz(text, length)
+							if err != nil {
+								// show log error if function fail to executed
+								assigner.Logger.Error("execute rps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							}
 						}
 					}
 
@@ -739,26 +748,35 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 					lenSubArgArr := len(subArgArr)
 
-					if lenSubArgArr <= 1 {
-						result = "invalid parameter"
-						err = errors.New(result)
-					}
-
 					// set index from from arg
 					length := 0
+					text := ""
 
 					if err == nil {
-						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
-						if err != nil {
-							assigner.Logger.Error(err.Error())
+						if lenSubArgArr < 1 {
+							result = "invalid parameter"
+							err = errors.New(result)
+						} else if lenSubArgArr == 1 {
+							text = ""
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[0]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
+
+						} else {
+							text = subArgArr[0]
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
 						}
-					}
 
-					if err == nil {
-						result, err = assigner.Rpz(subArgArr[0], length)
-						if err != nil {
-							// show log error if function fail to executed
-							assigner.Logger.Error("execute rpz", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						if err == nil {
+							result, err = assigner.Rpz(text, length)
+							if err != nil {
+								// show log error if function fail to executed
+								assigner.Logger.Error("execute rps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							}
 						}
 					}
 
@@ -784,26 +802,35 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 					lenSubArgArr := len(subArgArr)
 
-					if lenSubArgArr <= 1 {
-						result = "invalid parameter"
-						err = errors.New(result)
-					}
-
 					// set index from from arg
 					length := 0
+					text := ""
 
 					if err == nil {
-						length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
-						if err != nil {
-							assigner.Logger.Error(err.Error())
+						if lenSubArgArr < 1 {
+							result = "invalid parameter"
+							err = errors.New(result)
+						} else if lenSubArgArr == 1 {
+							text = ""
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[0]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
+
+						} else {
+							text = subArgArr[0]
+							length, err = strconv.Atoi(strings.TrimSpace(subArgArr[1]))
+							if err != nil {
+								assigner.Logger.Error(err.Error())
+							}
 						}
-					}
 
-					if err == nil {
-						result, err = assigner.Lps(subArgArr[0], length)
-						if err != nil {
-							// show log error if function fail to executed
-							assigner.Logger.Error("execute lps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+						if err == nil {
+							result, err = assigner.Lps(text, length)
+							if err != nil {
+								// show log error if function fail to executed
+								assigner.Logger.Error("execute rps", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							}
 						}
 					}
 

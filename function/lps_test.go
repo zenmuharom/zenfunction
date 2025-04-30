@@ -22,6 +22,10 @@ func Test_Lps(t *testing.T) {
 			Input:    "lps(zeni, 2)",
 			Expected: "zeni",
 		},
+		{
+			Input:    "lps(\"\", 5)",
+			Expected: "     ",
+		},
 	}
 
 	for noTest, tc := range testCases {
