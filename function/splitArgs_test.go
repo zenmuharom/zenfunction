@@ -63,6 +63,14 @@ func Test_SplitArgs(t *testing.T) {
 				"woi 1 ",
 			},
 		},
+		{
+			Input: strconv.Quote("FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:") + ", 0, 100",
+			Expected: []string{
+				"FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:",
+				"0",
+				"100",
+			},
+		},
 	}
 
 	for noTest, tc := range testCases {
@@ -78,7 +86,7 @@ func Test_SplitArgs(t *testing.T) {
 			}
 
 		} else {
-			errMsg = fmt.Sprintf("No Test.%v: %v expected (%v): %v result (%v): %v", (noTest + 1), "args total not same with expected total", len(tc.Expected), tc.Expected, len(result), result)
+			errMsg = fmt.Sprintf("No Test.%v: %v expected (%v): %v result (%#v): %v", (noTest + 1), "args total not same with expected total", len(tc.Expected), tc.Expected, len(result), result)
 			err = errors.New(errMsg)
 		}
 

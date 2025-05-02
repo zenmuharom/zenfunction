@@ -531,12 +531,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				// replace the string from raw function to its result
-				str = str[:funcStart] + result + str[argEnd+1:]
-
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute trim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "ltrim":
 				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -567,12 +562,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				// replace the string from raw function to its result
-				str = str[:funcStart] + result + str[argEnd+1:]
-
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute ltrim", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "substr":
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -630,10 +620,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				// replace the string from raw function to its result
-				str = str[:funcStart] + result + str[argEnd+1:]
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute substr", zenlogger.ZenField{Key: "result", Value: fmt.Sprintf("%q", result)}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "replaceAll":
 				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -672,9 +659,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lpz":
 				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -723,9 +708,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "rpz":
 				assigner.Logger.Debug("execute rpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -774,9 +757,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute rpz", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lps":
 				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -825,10 +806,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				}
 
 				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute lps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "rps":
 				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -875,11 +854,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				}
 
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute rps", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "randomInt":
 				assigner.Logger.Debug("execute randomInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -947,19 +923,13 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-
-					// replace the string from raw function to its result
-					// wrap with quotes for safe splitArgs usage
-					result = fmt.Sprintf("\"%s\"", result)
-					str = str[:funcStart] + result + str[argEnd+1:]
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				}
-				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateAdd":
 				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
 				argArr := splitArgs(subArg)
-
-				fmt.Println(len(argArr))
 
 				if len(argArr) == 4 {
 					add, errAdd := strconv.Atoi(strings.TrimSpace(argArr[2]))
@@ -976,13 +946,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					err = errors.New(result)
 				}
 
-				// replace the string from raw function to its result
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-
-				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute dateAdd", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateFormat":
 				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -1003,13 +968,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// replace the string from raw function to its result
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-
-				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute dateFormat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "md5":
 				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 
@@ -1019,13 +979,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute md5", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-					// replace the string from raw function to its result
-					// wrap with quotes for safe splitArgs usage
-					result = fmt.Sprintf("\"%s\"", result)
-
-					str = str[:funcStart] + result + str[argEnd+1:]
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				}
-				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute md5", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "sha1":
 				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 
@@ -1035,14 +991,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute sha1", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-
-					// replace the string from raw function to its result
-					// wrap with quotes for safe splitArgs usage
-					result = fmt.Sprintf("\"%s\"", result)
-
-					str = str[:funcStart] + result + str[argEnd+1:]
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				}
-				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute sha1", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "sha256":
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				args := splitArgs(subArg)
@@ -1050,12 +1001,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute sha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-
-					// replace the string from raw function to its result
-					// wrap with quotes for safe splitArgs usage
-					result = fmt.Sprintf("\"%s\"", result)
-
-					str = str[:funcStart] + result + str[argEnd+1:]
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute sha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "hmacSha256":
@@ -1070,16 +1016,11 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					if err != nil {
 						assigner.Logger.Error("execute hmacSha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
 					} else {
-
-						// replace the string from raw function to its result
-						// wrap with quotes for safe splitArgs usage
-						result = fmt.Sprintf("\"%s\"", result)
-
-						str = str[:funcStart] + result + str[argEnd+1:]
+						str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 					}
 				}
 
-				assigner.Logger.Debug("execute hmacSha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute hmacSha256", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "encryptWithPrivateKey":
 				result := ""
 				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
@@ -1103,13 +1044,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					return str, err
 				}
 
-				// replace the string from raw function to its result
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 
-				str = str[:funcStart] + result + str[argEnd+1:]
-
-				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute EncryptWithPrivateKey", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "basicAuth":
 				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				subArgArr := splitArgs(subArg)
@@ -1117,13 +1054,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				if err != nil {
 					assigner.Logger.Error("execute basicAuth", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-					// replace the string from raw function to its result
-					// wrap with quotes for safe splitArgs usage
-					result = fmt.Sprintf("\"%s\"", result)
-
-					str = str[:funcStart] + result + str[argEnd+1:]
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				}
-				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				assigner.Logger.Debug("execute basicAuth", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "concat":
 				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -1145,13 +1078,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// replace the string from raw function to its result
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-
-				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute concat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "strtolower":
 				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
@@ -1170,13 +1098,8 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// replace the string from raw function to its result
-				// wrap with quotes for safe splitArgs usage
-				result = fmt.Sprintf("\"%s\"", result)
-
-				str = str[:funcStart] + result + str[argEnd+1:]
-
-				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute strtolower", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "str", Value: str}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "addPropertyToArray":
 				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""

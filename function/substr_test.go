@@ -23,30 +23,30 @@ func TestSubstr(t *testing.T) {
 	specialCase = strings.ReplaceAll(specialCase, "$middleware_response_id", middleware_response_value)
 
 	testCases := []TestCase{
-		// {
-		// 	Input:    "",
-		// 	Expected: "",
-		// },
-		// {
-		// 	Input:    "substr(test woi, 0, 4)",
-		// 	Expected: "test",
-		// },
-		// {
-		// 	Input:    "substr(tets lah, 5)",
-		// 	Expected: "lah",
-		// },
-		// {
-		// 	Input:    "substr(test lah)",
-		// 	Expected: "invalid parameter",
-		// },
-		// {
-		// 	Input:    "substr()",
-		// 	Expected: "invalid parameter",
-		// },
-		// {
-		// 	Input:    specialCase,
-		// 	Expected: "512233350072",
-		// },
+		{
+			Input:    "",
+			Expected: "",
+		},
+		{
+			Input:    "substr(test woi, 0, 4)",
+			Expected: "test",
+		},
+		{
+			Input:    "substr(tets lah, 5)",
+			Expected: "lah",
+		},
+		{
+			Input:    "substr(test lah)",
+			Expected: "invalid parameter",
+		},
+		{
+			Input:    "substr()",
+			Expected: "invalid parameter",
+		},
+		{
+			Input:    specialCase,
+			Expected: "512233350072",
+		},
 		{
 			Input:    "substr(" + strconv.Quote("FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile") + ", 0, 21)",
 			Expected: "FINNET - MUAMALAT\r\n",
@@ -54,28 +54,13 @@ func TestSubstr(t *testing.T) {
 	}
 
 	for noTest, tc := range testCases {
-		var result any
-		res, err := assigner.ReadCommand(tc.Input)
+		res, err := assigner.ReadCommandV2("string", tc.Input)
 		errMsg := ""
 		if err != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 
-		switch v := res.(type) {
-		case string:
-
-			if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
-				// safe unwrap only outer quotes
-				v = v[1 : len(v)-1]
-			}
-			result = v
-
-			require.NoError(t, err, errMsg)
-
-			require.Equal(t, tc.Expected, result)
-		default:
-			// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
-			result = fmt.Sprintf("%v", v)
-		}
+		require.NoError(t, err, errMsg)
+		require.Equal(t, tc.Expected, res)
 	}
 }
