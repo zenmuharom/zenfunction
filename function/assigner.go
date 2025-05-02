@@ -46,14 +46,20 @@ func (assigner *DefaultAssigner) ReadCommandV2(dType, str string) (result any, e
 
 		switch dType {
 		case variable.TYPE_STRING:
+
 			switch v := res.(type) {
 			case string:
-
-				if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
-					// safe unwrap only outer quotes
-					v = v[1 : len(v)-1]
+				unquoted, errUnquote := strconv.Unquote(v)
+				if errUnquote != nil {
+					if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
+						// safe unwrap only outer quotes
+						v = v[1 : len(v)-1]
+					}
+					result = v
+				} else {
+					result = unquoted
 				}
-				result = v
+
 			default:
 				// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
 				result = fmt.Sprintf("%v", v)
@@ -1259,7 +1265,6 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 					}
 				}
 
-				// result = escapedCommas(result)
 				str = str[:funcStart] + result + str[argEnd+1:]
 				assigner.Logger.Debug("execute addPropertyToArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lengthArray":
