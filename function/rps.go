@@ -1,10 +1,19 @@
 package function
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
-func (assigner *DefaultAssigner) Rps(arg string, numberOfPad int) (hashed string, err error) {
+func (assigner *DefaultAssigner) Rps(arg string, numberOfPad int) (result string, err error) {
+	unquotedArg, errUnquote := strconv.Unquote(arg)
+	if errUnquote == nil {
+		arg = unquotedArg
+	}
+
 	if len(arg) >= numberOfPad {
 		return arg, nil
 	}
-	return arg + strings.Repeat(" ", numberOfPad-len(arg)), nil
+	result = arg + strings.Repeat(" ", numberOfPad-len(arg))
+	return
 }
