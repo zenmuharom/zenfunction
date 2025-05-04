@@ -632,8 +632,6 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				} else {
 					subArgArr := splitArgs(subArg)
 
-					fmt.Println(fmt.Sprintf("%q", subArgArr))
-
 					lenSubArgArr := len(subArgArr)
 
 					if lenSubArgArr < 2 {

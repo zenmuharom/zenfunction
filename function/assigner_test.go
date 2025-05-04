@@ -60,8 +60,8 @@ func TestReadCommand(t *testing.T) {
 			Expected: "FINNET -",
 		},
 		{
-			Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 20)", "$field", strconv.Quote(billerResp)),
-			Expected: "FINNET - MUAMALAT\r\n",
+			Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 50)", "$field", strconv.Quote(billerResp)),
+			Expected: billerResp[:50],
 		},
 	}
 

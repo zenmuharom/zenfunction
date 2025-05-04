@@ -1,39 +1,17 @@
 package function
 
-import (
-	"strings"
-)
+import "fmt"
 
-func (assigner *DefaultAssigner) Substr(arg string, from int, to int) (string, error) {
-	var result strings.Builder
-	visualCount := 0
+func (assigner *DefaultAssigner) Substr(arg string, from int, to int) (result string, err error) {
 
-	for i := 0; i < len(arg); i++ {
-		ch := arg[i]
+	fmt.Println(arg, from, to)
+	to = from + to
 
-		// Untuk menghitung visual length
-		visualLen := 1
-		if ch == '\\' || ch == '\r' || ch == '\n' || ch == '\t' {
-			visualLen = 2
-		}
-
-		if visualCount+visualLen <= from {
-			visualCount += visualLen
-			continue
-		}
-		if visualCount >= from+to {
-			break
-		}
-
-		// kalau batas terpotong, dan karakter adalah '\', tambahkan \\ biar valid
-		if visualCount+visualLen > from+to && ch == '\\' {
-			result.WriteString(`\\`)
-			break
-		}
-
-		result.WriteByte(ch)
-		visualCount += visualLen
+	if to == 0 || to > len(arg) {
+		to = len(arg)
 	}
 
-	return result.String(), nil
+	result = arg[from:to]
+
+	return
 }

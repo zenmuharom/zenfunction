@@ -28,8 +28,12 @@ func TestSubstr(t *testing.T) {
 			Expected: "",
 		},
 		{
-			Input:    "substr(test woi, 0, 4)",
+			Input:    "substr(\"test woi\", 0, 4)",
 			Expected: "test",
+		},
+		{
+			Input:    "substr(\"test woi\", 4, 4)",
+			Expected: " woi",
 		},
 		{
 			Input:    "substr(tets lah, 5)",
@@ -48,8 +52,8 @@ func TestSubstr(t *testing.T) {
 			Expected: "512233350072",
 		},
 		{
-			Input:    "substr(" + strconv.Quote("FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile") + ", 0, 21)",
-			Expected: "FINNET - MUAMALAT\r\n",
+			Input:    "substr(" + strconv.Quote("FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile") + ", 0, 70)",
+			Expected: "FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepa",
 		},
 	}
 
