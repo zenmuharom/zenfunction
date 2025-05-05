@@ -84,7 +84,6 @@ func TestReadCommand(t *testing.T) {
 			result = v
 
 			require.NoError(t, err, errMsg)
-			fmt.Println(result)
 			// require.Equal(t, tc.Expected, result)
 		default:
 			// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
@@ -96,6 +95,5 @@ func TestReadCommand(t *testing.T) {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 		require.Equal(t, tc.Expected, res2)
-		fmt.Println(errMsg)
 	}
 }

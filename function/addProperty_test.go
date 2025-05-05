@@ -37,8 +37,6 @@ func TestAddProperty(t *testing.T) {
 		}
 		require.NoError(t, err, errMsg)
 
-		fmt.Println(result)
-
 		if result != "invalid parameter" {
 			var resArr []any
 			e := json.Unmarshal([]byte(fmt.Sprintf("%v", result)), &resArr)
