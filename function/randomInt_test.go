@@ -38,6 +38,10 @@ func TestRandomInt(t *testing.T) {
 			Input:    "randomInt(20)",
 			Expected: "20",
 		},
+		{
+			Input:    "randomInt(16)",
+			Expected: "16",
+		},
 	}
 
 	for noTest, tc := range testCases {
