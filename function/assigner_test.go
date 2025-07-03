@@ -74,17 +74,18 @@ func TestReadCommand(t *testing.T) {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
 		}
 
+		require.NoError(t, err, errMsg)
+
 		switch v := res.(type) {
 		case string:
 
-			if strings.HasPrefix(v, `"`) && strings.HasSuffix(v, `"`) && len(v) >= 2 {
-				// safe unwrap only outer quotes
-				v = v[1 : len(v)-1]
+			unquote, errUnquote := strconv.Unquote(fmt.Sprintf("%v", res))
+			if errUnquote != nil {
+				result = fmt.Sprintf("%v", res)
+			} else {
+				result = fmt.Sprintf("%v", unquote)
 			}
-			result = v
-
-			require.NoError(t, err, errMsg)
-			// require.Equal(t, tc.Expected, result)
+			require.Equal(t, tc.Expected, result)
 		default:
 			// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
 			result = fmt.Sprintf("%v", v)
