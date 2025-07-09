@@ -26,6 +26,4 @@ func (assigner *DefaultAssigner) DateNow(format string) (generated string, err e
 	default:
 		return now.Format(format), nil
 	}
-
-	return
 }

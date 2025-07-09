@@ -20,7 +20,7 @@ func TestDateNow(t *testing.T) {
 		// 	Expected: time.Now().Format(time.RFC3339),
 		// },
 		// {
-		// 	Input:    "dateNow(2006)",
+		// 	Input:    "dateNow(\"2006\")",
 		// 	Expected: time.Now().Format("2006"),
 		// },
 		// {
@@ -72,14 +72,14 @@ func TestDateNow(t *testing.T) {
 		// 	Expected: time.Now().Format("20060102150405.0000"),
 		// },
 		{
-			Input:    "dateNow(unix)",
-			Expected: fmt.Sprintf("%d", time.Now().Unix()),
+			Input:    "dateNow(\"unix\")",
+			Expected: fmt.Sprintf("%dtest", time.Now().Unix()),
 		},
 	}
 
 	for noTest, tc := range testCases {
 		var result any
-		res, err := assigner.ReadCommand(tc.Input)
+		res, err := assigner.ReadCommandV2("string", tc.Input)
 		errMsg := ""
 		if err != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())

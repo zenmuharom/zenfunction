@@ -916,8 +916,9 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				assigner.Logger.Debug("execute uuid", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateNow":
+				argArr := splitArgs(subArg)
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				result, err := assigner.DateNow(subArg)
+				result, err := assigner.DateNow(argArr[0])
 				if err != nil {
 					assigner.Logger.Error("execute dateNow", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
