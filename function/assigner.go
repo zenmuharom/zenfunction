@@ -399,7 +399,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid)\b`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -905,7 +905,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 
 				result, err = assigner.Uuid()
 				if err != nil {
-					assigner.Logger.Error("execute randomInt", zenlogger.ZenField{Key: "error", Value: err.Error()})
+					assigner.Logger.Error("execute uuid", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				}
 
 				// wrap with quotes for safe splitArgs usage
@@ -915,6 +915,19 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				str = str[:funcStart] + result + str[argEnd+1:]
 
 				assigner.Logger.Debug("execute uuid", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "pid":
+				assigner.Logger.Debug("execute pid", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				result = assigner.Logger.GetPid()
+
+				// wrap with quotes for safe splitArgs usage
+				result = fmt.Sprintf("\"%s\"", result)
+
+				// replace the string from raw function to its result
+				str = str[:funcStart] + result + str[argEnd+1:]
+
+				assigner.Logger.Debug("execute pid", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "dateNow":
 				argArr := splitArgs(subArg)
 				assigner.Logger.Debug("execute dateNow", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})

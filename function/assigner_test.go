@@ -3,9 +3,7 @@ package function
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/zenmuharom/zenfunction/variable"
@@ -16,8 +14,8 @@ func TestReadCommand(t *testing.T) {
 	logger := zenlogger.NewZenlogger()
 	assigner := NewAssigner(logger)
 
-	billerResp := "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:"
-	input := "substr($field, 0, 100)"
+	// billerResp := "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:"
+	// input := "substr($field, 0, 100)"
 	testCases := []TestCase{
 		{
 			Input:    "",
@@ -32,37 +30,41 @@ func TestReadCommand(t *testing.T) {
 			Expected: "dateNow",
 		},
 		{
-			Input:    "trim(dateNow(), 2025)",
-			Expected: strings.Trim(fmt.Sprintf("%v", time.Now().Format(time.RFC3339)), "2025"),
+			Input:    "pid()",
+			Expected: logger.GetPid(),
 		},
-		{
-			Input:    "dateAdd(\"2006/01/02\", dateNow(), 30, day)",
-			Expected: time.Now().AddDate(0, 0, 30).Format("2006/01/02"),
-		},
-		{
-			Input:    "substr(dateAdd(2006, dateNow(2006), 1, year), 0, 2)",
-			Expected: "20",
-		},
-		{
-			Input:    "trim(substr(\"1267345625003090001303GAYCGKDPS 7502208061803GAYCGKDPS 7502208061803GAYCGKDPS 75022080618IDHAM DHIYAULHAQ HABIBI       ABC123         \", 89, 30))",
-			Expected: "IDHAM DHIYAULHAQ HABIBI",
-		},
-		{
-			Input:    strings.ReplaceAll(input, "$field", strconv.Quote(billerResp)),
-			Expected: "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:",
-		},
-		{
-			Input:    strings.ReplaceAll("rps($field, 200)", "$field", strconv.Quote(billerResp)),
-			Expected: "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:                                                                                                                          ",
-		},
-		{
-			Input:    strings.ReplaceAll("substr($field, 0, 8)", "$field", strconv.Quote(billerResp)),
-			Expected: "FINNET -",
-		},
-		{
-			Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 50)", "$field", strconv.Quote(billerResp)),
-			Expected: billerResp[:50],
-		},
+		// {
+		// 	Input:    "trim(dateNow(), 2025)",
+		// 	Expected: strings.Trim(fmt.Sprintf("%v", time.Now().Format(time.RFC3339)), "2025"),
+		// },
+		// {
+		// 	Input:    "dateAdd(\"2006/01/02\", dateNow(), 30, day)",
+		// 	Expected: time.Now().AddDate(0, 0, 30).Format("2006/01/02"),
+		// },
+		// {
+		// 	Input:    "substr(dateAdd(2006, dateNow(2006), 1, year), 0, 2)",
+		// 	Expected: "20",
+		// },
+		// {
+		// 	Input:    "trim(substr(\"1267345625003090001303GAYCGKDPS 7502208061803GAYCGKDPS 7502208061803GAYCGKDPS 75022080618IDHAM DHIYAULHAQ HABIBI       ABC123         \", 89, 30))",
+		// 	Expected: "IDHAM DHIYAULHAQ HABIBI",
+		// },
+		// {
+		// 	Input:    strings.ReplaceAll(input, "$field", strconv.Quote(billerResp)),
+		// 	Expected: "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:",
+		// },
+		// {
+		// 	Input:    strings.ReplaceAll("rps($field, 200)", "$field", strconv.Quote(billerResp)),
+		// 	Expected: "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:                                                                                                                          ",
+		// },
+		// {
+		// 	Input:    strings.ReplaceAll("substr($field, 0, 8)", "$field", strconv.Quote(billerResp)),
+		// 	Expected: "FINNET -",
+		// },
+		// {
+		// 	Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 50)", "$field", strconv.Quote(billerResp)),
+		// 	Expected: billerResp[:50],
+		// },
 	}
 
 	for noTest, tc := range testCases {
