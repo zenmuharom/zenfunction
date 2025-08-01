@@ -65,6 +65,10 @@ func TestReadCommand(t *testing.T) {
 		// 	Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 50)", "$field", strconv.Quote(billerResp)),
 		// 	Expected: billerResp[:50],
 		// },
+		{
+			Input:    "removeItemOnObject(\"{\\\"name\\\":\\\"ZeniMuharom\\\",\\\"gender\\\":\\\"male\\\",\\\"age\\\":30,\\\"address\\\":{\\\"street\\\":\\\"Jl.BasukiRachmatNo.1A\\\",\\\"city\\\":\\\"EastJakarta\\\",\\\"nation\\\":\\\"Indonesia\\\"}}\", \"name\", \"gender\")",
+			Expected: "{\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}}",
+		},
 	}
 
 	for noTest, tc := range testCases {
