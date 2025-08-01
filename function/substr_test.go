@@ -55,6 +55,10 @@ func TestSubstr(t *testing.T) {
 			Input:    "substr(" + strconv.Quote("FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepat waktu:|Download PLN Mobile") + ", 0, 70)",
 			Expected: "FINNET - MUAMALAT\r\nSlamat thn baru 2025 - Byr Sbelum tgl 20 \"Tag\" Tepa",
 		},
+		{
+			Input:    "substr(\"halo\", 6, 8)",
+			Expected: "halo",
+		},
 	}
 
 	for noTest, tc := range testCases {

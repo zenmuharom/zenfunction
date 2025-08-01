@@ -1216,14 +1216,55 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				assigner.Logger.Debug("execute lengthArray", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "removeItemOnObject":
 				assigner.Logger.Debug("execute removeItemOnObject", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				argArr := splitArgs(subArg)
-				result, err := assigner.RemoveItemOnObject(argArr...)
+
+				result := ""
+				var jsonObjectStr, remainder string
+
+				subArg = strings.TrimSpace(subArg)
+				if strings.HasPrefix(subArg, "{") {
+					depth := 0
+					pos := -1
+					for i, ch := range subArg {
+						if ch == '{' {
+							depth++
+						} else if ch == '}' {
+							depth--
+							if depth == 0 {
+								pos = i
+								break
+							}
+						}
+					}
+					if pos == -1 {
+						err = errors.New("invalid JSON object in removeItemOnObject")
+						result = "invalid JSON object"
+						break
+					}
+					jsonObjectStr = subArg[:pos+1]
+					remainder = strings.TrimSpace(subArg[pos+1:])
+					if strings.HasPrefix(remainder, ",") {
+						remainder = strings.TrimSpace(remainder[1:])
+					}
+				} else {
+					err = errors.New("first argument must be JSON object")
+					break
+				}
+
+				keyArgs := []string{}
+				if remainder != "" {
+					keyArgs = splitArgs(remainder)
+				}
+
+				allArgs := append([]string{jsonObjectStr}, keyArgs...)
+
+				result, err = assigner.RemoveItemOnObject(allArgs...)
 				if err != nil {
 					assigner.Logger.Error("execute removeItemOnObject", zenlogger.ZenField{Key: "error", Value: err.Error()})
 				} else {
-					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+					str = str[:funcStart] + result + str[argEnd+1:]
 				}
 				assigner.Logger.Debug("execute removeItemOnObject", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+
 			}
 		}
 		loop++
