@@ -3,7 +3,7 @@ package function
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"errors"
 
 	"github.com/zenmuharom/zenlogger"
@@ -20,6 +20,6 @@ func (assigner *DefaultAssigner) hmacSha256(data, key string) (hashed string, er
 	h.Write([]byte(data))
 	hash := h.Sum(nil)
 
-	hashed = base64.StdEncoding.EncodeToString(hash)
+	hashed = hex.EncodeToString(hash)
 	return hashed, nil
 }

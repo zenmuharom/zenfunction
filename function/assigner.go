@@ -1019,7 +1019,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 			case "hmacSha256":
 				result := ""
 				assigner.Logger.Debug("execute hmacSha256", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
-				args := strings.Split(subArg, "|")
+				args := splitArgs(subArg)
 				if len(args) != 2 {
 					err := errors.New("invalid number of arguments")
 					assigner.Logger.Error("execute hmacSha256", zenlogger.ZenField{Key: "error", Value: err.Error()})
