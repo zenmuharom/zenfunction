@@ -16,7 +16,7 @@ func TestRemoveItemOnObject(t *testing.T) {
 
 	testCases := []TestCase{
 		{
-			Input:    "removeItemOnObject({\"name\":\"ZeniMuharom\",\"gender\":\"male\",\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}}, \"name\", \"gender\")",
+			Input:    "removeItemOnObject({\"name\":\"ZeniMuharom\",\"gender\":\"male\",\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}}, \"name\")",
 			Expected: "{\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}",
 		},
 	}

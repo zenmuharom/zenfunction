@@ -121,7 +121,12 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 	case "=":
 		valueToCompareParsed := ""
 		if valueToCompare != nil {
-			valueToCompareParsed = valueToCompare.(string)
+			// Safe type assertion to prevent panic
+			if str, ok := valueToCompare.(string); ok {
+				valueToCompareParsed = str
+			} else {
+				valueToCompareParsed = fmt.Sprintf("%v", valueToCompare)
+			}
 		}
 		functionGenerated = fmt.Sprintf("%v = %v", valueToCompareParsed, value)
 		valid = fmt.Sprintf("%v", valueToCompareParsed) == fmt.Sprintf("%v", value)
@@ -276,7 +281,12 @@ func (assigner *DefaultAssigner) validityConditionCore(operator string, valueToC
 	case "!=":
 		valueToCompareParsed := ""
 		if valueToCompare != nil {
-			valueToCompareParsed = valueToCompare.(string)
+			// Safe type assertion to prevent panic
+			if str, ok := valueToCompare.(string); ok {
+				valueToCompareParsed = str
+			} else {
+				valueToCompareParsed = fmt.Sprintf("%v", valueToCompare)
+			}
 		}
 		functionGenerated = fmt.Sprintf("%v != %v", valueToCompareParsed, value)
 		valid = fmt.Sprintf("%v", valueToCompareParsed) != fmt.Sprintf("%v", value)
@@ -372,7 +382,13 @@ func (assigner *DefaultAssigner) AssignValue(parent domain.AssignVariableValue, 
 			parent.Value = intVal
 		}
 	case "boolean":
-		parent.Value = valueToAssign.Value.(bool)
+		// Safe type assertion to prevent panic
+		if val, ok := valueToAssign.Value.(bool); ok {
+			parent.Value = val
+		} else {
+			assigner.Logger.Debug("AssignValue", zenlogger.ZenField{Key: "warning", Value: "type mismatch: expected bool, got non-bool value"})
+			parent.Value = false // Default to false to maintain logic
+		}
 	case "float":
 
 	default:
