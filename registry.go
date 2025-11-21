@@ -175,6 +175,48 @@ func GetAvailableFunctions() []FunctionInfo {
 			},
 		},
 		{
+			Name:        "replace",
+			Description: "Replace a limited number of occurrences of a string with another string",
+			Category:    "string",
+			Parameters: []Parameter{
+				{
+					Name:        "text",
+					Type:        TypeString,
+					Required:    true,
+					Description: "Source text",
+					Example:     "hello world hello universe",
+				},
+				{
+					Name:        "search",
+					Type:        TypeString,
+					Required:    true,
+					Description: "String to search for",
+					Example:     "hello",
+				},
+				{
+					Name:        "replace",
+					Type:        TypeString,
+					Required:    true,
+					Description: "String to replace with",
+					Example:     "hi",
+				},
+				{
+					Name:        "count",
+					Type:        TypeInt,
+					Required:    false,
+					Description: "Number of replacements to make (default: -1 for all). Use 0 for no replacement, positive number for limited replacements, -1 for all occurrences",
+					Example:     "1",
+				},
+			},
+			ReturnType: TypeString,
+			Examples: []string{
+				`replace("hello world hello", "hello", "hi", 1)`,
+				`replace("foo bar foo baz foo", "foo", "test", 2)`,
+				`replace($text, " ", "_", -1)`,
+				`replace("a-b-c-d-e", "-", "_", 3)`,
+			},
+		},
+		{
 			Name:        "replaceAll",
 			Description: "Replace all occurrences of a string with another string",
 			Category:    "string",
