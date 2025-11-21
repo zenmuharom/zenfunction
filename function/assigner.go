@@ -415,7 +415,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replace|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject)\b`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -675,6 +675,53 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				// wrap with quotes for safe splitArgs usage
 				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
 				assigner.Logger.Debug("execute replaceAll", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "replace":
+				assigner.Logger.Debug("execute replace", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				result := ""
+
+				if subArg == "" {
+					result = "invalid parameter"
+					err = errors.New(result)
+				} else {
+					subArgArr := splitArgs(subArg)
+
+					lenSubArgArr := len(subArgArr)
+
+					if lenSubArgArr < 3 {
+						result = "invalid parameter"
+						err = errors.New(result)
+					}
+
+					replaceTo := ""
+					count := -1
+
+					if err == nil {
+
+						if lenSubArgArr >= 3 {
+							replaceTo = subArgArr[2]
+						}
+
+						if lenSubArgArr >= 4 {
+							count, err = strconv.Atoi(strings.TrimSpace(subArgArr[3]))
+							if err != nil {
+								assigner.Logger.Error("execute replace", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							}
+						}
+
+						if err == nil {
+							result, err = assigner.Replace(subArgArr[0], subArgArr[1], replaceTo, count)
+							if err != nil {
+								// show log error if function fail to executed
+								assigner.Logger.Error("execute replace", zenlogger.ZenField{Key: "error", Value: err.Error()})
+							}
+						}
+					}
+
+				}
+
+				// wrap with quotes for safe splitArgs usage
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute replace", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "lpz":
 				assigner.Logger.Debug("execute lpz", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
