@@ -657,6 +657,34 @@ func GetAvailableFunctions() []FunctionInfo {
 			},
 		},
 		{
+			Name:        "json_unpack",
+			Description: "Extract nested values from JSON using dot notation or multiple keys. Returns nil for non-existent keys.",
+			Category:    "json",
+			Parameters: []Parameter{
+				{
+					Name:        "json",
+					Type:        TypeString,
+					Required:    true,
+					Description: "JSON string to parse",
+					Example:     `{"user":{"name":"John","age":30}}`,
+				},
+				{
+					Name:        "keys",
+					Type:        TypeString,
+					Required:    true,
+					Description: "One or more keys to traverse the JSON structure (variadic)",
+					Example:     "user",
+				},
+			},
+			ReturnType: TypeAny,
+			Examples: []string{
+				`json_unpack("{\"user\":{\"name\":\"John\"}}", "user", "name")`,
+				`json_unpack("{\"data\":{\"items\":[1,2,3]}}", "data", "items")`,
+				`json_unpack($jsonString, "address", "city")`,
+				`json_unpack("{\"a\":{\"b\":{\"c\":\"value\"}}}", "a", "b", "c")`,
+			},
+		},
+		{
 			Name:        "lengthArray",
 			Description: "Get length of an array",
 			Category:    "json",
