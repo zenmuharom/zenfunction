@@ -415,7 +415,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replace|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|json_unpack|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replace|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject)\b`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -498,6 +498,31 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 				arg = result
 			}
 			assigner.Logger.Debug("execute json_decode", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			break
+		}
+
+		if funcMatch == "json_unpack" {
+			assigner.Logger.Debug("execute json_unpack", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+
+			// Parse arguments: first is JSON string, rest are keys
+			argArr := splitArgs(subArg)
+			if len(argArr) == 0 {
+				assigner.Logger.Error("execute json_unpack", zenlogger.ZenField{Key: "error", Value: "invalid parameter: empty arguments"})
+				err = errors.New("invalid parameter")
+				arg = nil
+			} else {
+				jsonStr := argArr[0]
+				keys := argArr[1:]
+				result, errUnpack := assigner.JsonUnpack(jsonStr, keys...)
+				if errUnpack != nil {
+					assigner.Logger.Error("execute json_unpack", zenlogger.ZenField{Key: "error", Value: errUnpack.Error()})
+					err = errUnpack
+					arg = nil
+				} else {
+					arg = result
+				}
+				assigner.Logger.Debug("execute json_unpack", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			}
 			break
 		}
 

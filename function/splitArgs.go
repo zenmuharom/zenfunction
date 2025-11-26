@@ -11,6 +11,8 @@ func splitArgs(input string) []string {
 	inQuotes := false
 	escaped := false
 	depth := 0
+	braceDepth := 0   // Track curly braces for JSON objects
+	bracketDepth := 0 // Track square brackets for JSON arrays
 
 	for i, r := range input {
 		switch {
@@ -29,7 +31,19 @@ func splitArgs(input string) []string {
 		case r == ')' && !inQuotes:
 			depth--
 			current.WriteRune(r)
-		case r == ',' && !inQuotes && depth == 0:
+		case r == '{' && !inQuotes:
+			braceDepth++
+			current.WriteRune(r)
+		case r == '}' && !inQuotes:
+			braceDepth--
+			current.WriteRune(r)
+		case r == '[' && !inQuotes:
+			bracketDepth++
+			current.WriteRune(r)
+		case r == ']' && !inQuotes:
+			bracketDepth--
+			current.WriteRune(r)
+		case r == ',' && !inQuotes && depth == 0 && braceDepth == 0 && bracketDepth == 0:
 			part := strings.TrimSpace(current.String())
 			if unquoted, err := strconv.Unquote(part); err == nil {
 				args = append(args, unquoted)

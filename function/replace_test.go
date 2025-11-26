@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/zenmuharom/zenfunction/variable"
 	"github.com/zenmuharom/zenlogger"
 )
 
@@ -57,7 +58,7 @@ func TestReplace(t *testing.T) {
 	}
 
 	for noTest, tc := range testCases {
-		result, err := assigner.ReadCommand(tc.Input)
+		result, err := assigner.ReadCommandV2(variable.TYPE_STRING, tc.Input)
 		errMsg := ""
 		if err != nil {
 			errMsg = fmt.Sprintf("No Test.%v: %v", noTest, err.Error())
