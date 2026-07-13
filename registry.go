@@ -354,6 +354,84 @@ func GetAvailableFunctions() []FunctionInfo {
 			},
 		},
 
+		// Conversion Functions
+		{
+			Name:        "toString",
+			Description: "Convert a value to string",
+			Category:    "conversion",
+			Parameters: []Parameter{
+				{
+					Name:        "value",
+					Type:        TypeAny,
+					Required:    true,
+					Description: "Value to convert",
+					Example:     "1000000",
+				},
+			},
+			ReturnType: TypeString,
+			Examples: []string{
+				`toString(123)`,
+				`toString($amount)`,
+			},
+		},
+		{
+			Name:        "toInt",
+			Description: "Convert a value to int64",
+			Category:    "conversion",
+			Parameters: []Parameter{
+				{
+					Name:        "value",
+					Type:        TypeAny,
+					Required:    true,
+					Description: "Value to convert",
+					Example:     "1000000",
+				},
+			},
+			ReturnType: TypeInt,
+			Examples: []string{
+				`toInt("1000000")`,
+				`toInt($nominal)`,
+			},
+		},
+		{
+			Name:        "toFloat",
+			Description: "Convert a value to float64",
+			Category:    "conversion",
+			Parameters: []Parameter{
+				{
+					Name:        "value",
+					Type:        TypeAny,
+					Required:    true,
+					Description: "Value to convert",
+					Example:     "1000.25",
+				},
+			},
+			ReturnType: TypeFloat,
+			Examples: []string{
+				`toFloat("1000.25")`,
+				`toFloat($amount)`,
+			},
+		},
+		{
+			Name:        "toBool",
+			Description: "Convert a value to boolean",
+			Category:    "conversion",
+			Parameters: []Parameter{
+				{
+					Name:        "value",
+					Type:        TypeAny,
+					Required:    true,
+					Description: "Value to convert",
+					Example:     "true",
+				},
+			},
+			ReturnType: TypeBool,
+			Examples: []string{
+				`toBool("true")`,
+				`toBool($is_active)`,
+			},
+		},
+
 		// Cryptography Functions
 		{
 			Name:        "md5",

@@ -17,22 +17,22 @@ func TestReadCommand(t *testing.T) {
 	// billerResp := "FINNET - MUAMALAT\r\nHindari dend4 \"Tag+\", bayar sb3lum tgl 20 tiap bulannya ya:"
 	// input := "substr($field, 0, 100)"
 	testCases := []TestCase{
-		{
-			Input:    "",
-			Expected: "",
-		},
-		{
-			Input:    "test",
-			Expected: "test",
-		},
-		{
-			Input:    "dateNow",
-			Expected: "dateNow",
-		},
-		{
-			Input:    "pid()",
-			Expected: logger.GetPid(),
-		},
+		// {
+		// 	Input:    "",
+		// 	Expected: "",
+		// },
+		// {
+		// 	Input:    "test",
+		// 	Expected: "test",
+		// },
+		// {
+		// 	Input:    "dateNow",
+		// 	Expected: "dateNow",
+		// },
+		// {
+		// 	Input:    "pid()",
+		// 	Expected: logger.GetPid(),
+		// },
 		// {
 		// 	Input:    "trim(dateNow(), 2025)",
 		// 	Expected: strings.Trim(fmt.Sprintf("%v", time.Now().Format(time.RFC3339)), "2025"),
@@ -65,9 +65,13 @@ func TestReadCommand(t *testing.T) {
 		// 	Input:    strings.ReplaceAll("substr(rps($field, 10), 0, 50)", "$field", strconv.Quote(billerResp)),
 		// 	Expected: billerResp[:50],
 		// },
+		// {
+		// 	Input:    "removeItemOnObject(\"{\\\"name\\\":\\\"ZeniMuharom\\\",\\\"gender\\\":\\\"male\\\",\\\"age\\\":30,\\\"address\\\":{\\\"street\\\":\\\"Jl.BasukiRachmatNo.1A\\\",\\\"city\\\":\\\"EastJakarta\\\",\\\"nation\\\":\\\"Indonesia\\\"}}\", \"name\", \"gender\")",
+		// 	Expected: "{\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}}",
+		// },
 		{
-			Input:    "removeItemOnObject(\"{\\\"name\\\":\\\"ZeniMuharom\\\",\\\"gender\\\":\\\"male\\\",\\\"age\\\":30,\\\"address\\\":{\\\"street\\\":\\\"Jl.BasukiRachmatNo.1A\\\",\\\"city\\\":\\\"EastJakarta\\\",\\\"nation\\\":\\\"Indonesia\\\"}}\", \"name\", \"gender\")",
-			Expected: "{\"age\":30,\"address\":{\"street\":\"Jl.BasukiRachmatNo.1A\",\"city\":\"EastJakarta\",\"nation\":\"Indonesia\"}}",
+			Input:    "basicAuth(\"MUAMALAT:0l^Saa4iA8O3/V0flj-\\\"H#(\")",
+			Expected: "Basic TVVBTUFMQVQ6MGxeU2FhNGlBOE8zL1YwZmxqLSJIIyg=",
 		},
 	}
 

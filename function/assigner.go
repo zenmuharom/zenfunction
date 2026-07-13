@@ -61,8 +61,7 @@ func (assigner *DefaultAssigner) ReadCommandV2(dType, str string) (result any, e
 				}
 
 			default:
-				// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
-				result = fmt.Sprintf("%v", v)
+				result = convertToString(v)
 			}
 		default:
 			switch v := res.(type) {
@@ -74,8 +73,7 @@ func (assigner *DefaultAssigner) ReadCommandV2(dType, str string) (result any, e
 				}
 				result = v
 			default:
-				// for numbers, arrays, objects: convert to string (optional, sesuai kebutuhan)
-				result = fmt.Sprintf("%v", v)
+				result = convertToString(v)
 			}
 		}
 
@@ -415,7 +413,7 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 	// // argRe := regexp.MustCompile(`\(([^()]|\(([^()]|\(([^()]+)\))*\))*\)`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
-	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|json_unpack|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replace|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject)\b`)
+	funcRe := regexp.MustCompile(`(?:^|[^.])\b(json_decode|json_unpack|addPropertyToArray|lengthArray|ltrim|trim|substr|randomInt|uuid|replace|replaceAll|dateFormat|dateNow|dateAdd|md5|sha1|sha256|hmacSha256|encryptWithPrivateKey|concat|basicAuth|strtolower|lpz|rpz|lps|rps|pid|removeItemOnObject|toString|toInt|toFloat|toBool)\b`)
 	// argRe := regexp.MustCompile(`(\(([^()]|\(([^()]|\(([^()]+)\))*\))*\))|(\{[^{}]*\})`)
 
 	// Iterate over the string and extract nested function calls
@@ -543,6 +541,49 @@ func (assigner *DefaultAssigner) coreReadCommand(funcArg any) (arg interface{}, 
 		if err == nil {
 			var err error
 			switch funcMatch {
+			case "toString":
+				assigner.Logger.Debug("execute toString", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				argArr := splitArgs(subArg)
+				result, _ := assigner.ToString(argArr...)
+
+				str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				assigner.Logger.Debug("execute toString", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "toInt":
+				assigner.Logger.Debug("execute toInt", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				argArr := splitArgs(subArg)
+				result, err := assigner.ToInt(argArr...)
+
+				if err != nil {
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				} else {
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+
+				assigner.Logger.Debug("execute toInt", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "toFloat":
+				assigner.Logger.Debug("execute toFloat", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				argArr := splitArgs(subArg)
+				result, err := assigner.ToFloat(argArr...)
+
+				if err != nil {
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				} else {
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+
+				assigner.Logger.Debug("execute toFloat", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
+			case "toBool":
+				assigner.Logger.Debug("execute toBool", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
+				argArr := splitArgs(subArg)
+				result, err := assigner.ToBool(argArr...)
+
+				if err != nil {
+					str = str[:funcStart] + strconv.Quote(result) + str[argEnd+1:]
+				} else {
+					str = str[:funcStart] + result + str[argEnd+1:]
+				}
+
+				assigner.Logger.Debug("execute toBool", zenlogger.ZenField{Key: "result", Value: result}, zenlogger.ZenField{Key: "loop", Value: loop})
 			case "trim":
 				assigner.Logger.Debug("execute trim", zenlogger.ZenField{Key: "param", Value: subArg}, zenlogger.ZenField{Key: "loop", Value: loop})
 				result := ""
